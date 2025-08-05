@@ -35,6 +35,12 @@ $ npm run build:linux
 
 ## Log
 
+### build
+
+The `npm run build:win` script needs permission to create symlinks. Windows settings / System / For developers / Developer Mode: On -> enables symlinks without being Administrator
+
+### create the project and install packeges
+
 ```bash
 $ npm create @quick-start/electron@latest
 
