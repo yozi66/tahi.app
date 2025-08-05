@@ -1,7 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function Versions(): React.JSX.Element {
-  const [versions] = useState(window.electron.process.versions)
+
+  const [versions, setVersions] = useState<NodeJS.ProcessVersions>({} as any)
+
+  useEffect(() => {
+    // Call the new API to get the versions
+    window.api.getVersions().then((vers) => {
+      setVersions(vers)
+    })
+  }, [])
 
   return (
     <ul className="versions">
