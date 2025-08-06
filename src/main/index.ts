@@ -3,6 +3,16 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/tahi_icon_32px.png?asset'
 import path from 'path'
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
+
+const installDevTools = async (): Promise<void> => {
+  // Install React DevTools
+  if (process.env.NODE_ENV === 'development') {
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name.name}`))
+      .catch((err) => console.log('An error occurred: ', err))
+  }
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -23,7 +33,10 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    mainWindow.webContents.openDevTools()
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Development mode: opening DevTools')
+      mainWindow.webContents.openDevTools()
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -43,7 +56,7 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -62,6 +75,10 @@ app.whenReady().then(() => {
     return process.versions
   })
 
+  // Await the installation of the dev tools first
+  await installDevTools()
+
+  // Then, create the window
   createWindow()
 
   app.on('activate', function () {

@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 console.log('Preload script is running!')
+console.log('Reload (ctrl+r) may be needed to load React DevTools')
 
 // Custom APIs for renderer
 const api = {
