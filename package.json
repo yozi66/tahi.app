@@ -1,10 +1,10 @@
 {
   "name": "tahi.app",
-  "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "version": "0.0.1",
+  "description": "Todo app built with Electron and React",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "frigo.hu",
+  "homepage": "https://github.com/yozi66/tahi.app",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -22,7 +22,13 @@
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.3.9"
+    "@mantine/core": "^8.2.3",
+    "@mantine/hooks": "^8.2.3",
+    "@tabler/icons-react": "^3.34.1",
+    "allotment": "^1.20.4",
+    "electron-updater": "^6.3.9",
+    "mantine-datatable": "^8.2.0",
+    "react-router-dom": "^7.7.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -44,6 +50,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "typescript": "^5.8.3",
-    "vite": "^7.0.5"
+    "vite": "^7.0.5",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
