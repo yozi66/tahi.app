@@ -1,24 +1,24 @@
-import '@mantine/core/styles.layer.css';
-import 'mantine-datatable/styles.layer.css';
+import '@mantine/core/styles.layer.css'
+import 'mantine-datatable/styles.layer.css'
 
-import { DataTable, DataTableColumn } from 'mantine-datatable';
-import { Text } from '@mantine/core';
-import { TahiState, TodoItem } from '../../TodoData';
-import { TodoContext } from '@/App'; 
-import { useContext } from 'react';
+import { DataTable, DataTableColumn } from 'mantine-datatable'
+import { Text } from '@mantine/core'
+import { TahiState, TodoItem } from '../../TodoData'
+import { TodoContext } from  '../../TodoContext'
+import { useContext } from 'react'
 
-export default function Todolist() {
-  const { tahiState, setTahiState } = useContext(TodoContext);
+export default function Todolist(): React.JSX.Element {
+  const { tahiState, setTahiState } = useContext(TodoContext)
 
   const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>) => {
-    const updatedState: TahiState = tahiState.shallowCopy();
+    const updatedState: TahiState = tahiState.shallowCopy()
 
-    const clickedItemId = record.id;
-    updatedState.setSelectedItemId(clickedItemId);
-    const clickedIndex = updatedState.getSelectedItemIndex();
-    const updatedItems = updatedState.getTodoItems();
+    const clickedItemId = record.id
+    updatedState.setSelectedItemId(clickedItemId)
+    const clickedIndex = updatedState.getSelectedItemIndex()
+    const updatedItems = updatedState.getTodoItems()
 
-    const oldSelectedItemIndex = tahiState.getSelectedItemIndex();
+    const oldSelectedItemIndex = tahiState.getSelectedItemIndex()
 
     // by default, stop editing the previous item
     if (oldSelectedItemIndex !== undefined) {
@@ -35,7 +35,7 @@ export default function Todolist() {
         updatedItems[clickedIndex] = {...updatedItems[clickedIndex], done: !updatedItems[clickedIndex].done};
       }
     }
-    setTahiState(updatedState);
+    setTahiState(updatedState)
   }
 
   const handleInputChange = (record: TodoItem, newValue: string) => {

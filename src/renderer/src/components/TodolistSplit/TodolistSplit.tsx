@@ -1,10 +1,10 @@
 import { Box, Textarea } from '@mantine/core';
 import Todolist from '../Todolist/Todolist';
 import { Allotment } from 'allotment';
-import { TodoContext } from '@/App'; 
+import { TodoContext } from '../../TodoContext';
 import { useContext } from 'react';
 
-export default function TodolistSplit() {
+export default function TodolistSplit(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
   
   function handleInputChange(value: string) {
