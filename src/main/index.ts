@@ -58,7 +58,7 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // Handle versions request from renderer process
-  ipcMain.handle('versions', () => {
+  ipcMain.handle('get-versions', () => {
     return process.versions
   })
 
