@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 
 function Versions(): React.JSX.Element {
-
-  const [versions, setVersions] = useState<NodeJS.ProcessVersions>({} as any)
+  const [versions, setVersions] = useState<NodeJS.ProcessVersions>({} as NodeJS.ProcessVersions)
 
   useEffect(() => {
     // Call the new API to get the versions
