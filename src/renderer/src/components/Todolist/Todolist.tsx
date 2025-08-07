@@ -10,7 +10,7 @@ import { useContext } from 'react'
 export default function Todolist(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext)
 
-  const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>) => {
+  const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>): void => {
     const updatedState: TahiState = tahiState.shallowCopy()
 
     const clickedItemId = record.id
@@ -22,23 +22,32 @@ export default function Todolist(): React.JSX.Element {
 
     // by default, stop editing the previous item
     if (oldSelectedItemIndex !== undefined) {
-      updatedItems[oldSelectedItemIndex]= {...updatedItems[oldSelectedItemIndex], title: { ...updatedItems[oldSelectedItemIndex].title, editing: false }};
+      updatedItems[oldSelectedItemIndex] = {
+        ...updatedItems[oldSelectedItemIndex],
+        title: { ...updatedItems[oldSelectedItemIndex].title, editing: false }
+      }
     }
 
     if (clickedIndex !== undefined) {
       // Set edit mode when the title is clicked
       if (column.accessor === 'title') {
-        updatedItems[clickedIndex] = {...updatedItems[clickedIndex], title: {...updatedItems[clickedIndex].title, editing: true}};
+        updatedItems[clickedIndex] = {
+          ...updatedItems[clickedIndex],
+          title: { ...updatedItems[clickedIndex].title, editing: true }
+        }
       }
       // Toggle the done state when the checkbox is clicked
       if (column.accessor === 'done') {
-        updatedItems[clickedIndex] = {...updatedItems[clickedIndex], done: !updatedItems[clickedIndex].done};
+        updatedItems[clickedIndex] = {
+          ...updatedItems[clickedIndex],
+          done: !updatedItems[clickedIndex].done
+        }
       }
     }
     setTahiState(updatedState)
   }
 
-  const handleInputChange = (record: TodoItem, newValue: string) => {
+  const handleInputChange = (record: TodoItem, newValue: string): void => {
     const tahiStateCopy = tahiState.shallowCopy();
     tahiStateCopy.setSelectedItemId(record.id);
     tahiStateCopy.replaceItem(tahiState.getSelectedItemIndex()!, {

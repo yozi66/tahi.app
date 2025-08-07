@@ -7,7 +7,7 @@ import { useContext } from 'react';
 export default function TodolistSplit(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
   
-  function handleInputChange(value: string) {
+  function handleInputChange(value: string): void {
     const selectedItemIndex = tahiState.getSelectedItemIndex();
     const selectedItem = tahiState.getSelectedItem();
     if (!selectedItem || !selectedItemIndex) {
