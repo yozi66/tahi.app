@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: hu.frigo.tahi.app
 productName: tahi.app
 directories:
   buildResources: build
