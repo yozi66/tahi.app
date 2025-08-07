@@ -4,18 +4,40 @@
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
+    "src/renderer/test-utils",
     "src/preload/*.d.ts"
   ],
   "compilerOptions": {
+    "types": ["node", "@testing-library/jest-dom", "vitest/globals"],
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
     "composite": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": [
+      "@/*": [
+        "src/renderer/src/*"
+      ],
+      "@components/*": [
         "src/renderer/src/components/*"
       ],
-      "@/pages/*": [
-        "src/renderer/src/pages/*"
+      "@pages/*": [
+        "src/renderer/src/pages"
+      ],
+      "@test-utils": [
+        "src/renderer/test-utils"
       ]
     }
   }
