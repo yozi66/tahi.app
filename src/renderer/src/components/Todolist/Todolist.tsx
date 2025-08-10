@@ -3,59 +3,53 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { TahiState } from '../../data/TahiState';
+import { computeSelectedItemIndex } from '../../data/TahiState';
 import { TodoItem } from '../../data/TodoItem';
 import { TodoContext } from '../../data/TodoContext';
 import { useContext } from 'react';
+import { produce } from 'immer';
 
 export default function Todolist(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
 
   const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>): void => {
-    const updatedState: TahiState = tahiState.shallowCopy();
+    setTahiState((prevState) =>
+      produce(prevState, (updatedState) => {
+        const clickedItemId = record.id;
+        updatedState.selectedItemId = clickedItemId;
+        const clickedIndex = computeSelectedItemIndex(updatedState);
+        updatedState.selectedItemIndex = clickedIndex;
+        const updatedItems = updatedState.todoItems;
+        const oldSelectedItemIndex = tahiState.selectedItemIndex;
 
-    const clickedItemId = record.id;
-    updatedState.setSelectedItemId(clickedItemId);
-    const clickedIndex = updatedState.getSelectedItemIndex();
-    const updatedItems = updatedState.getTodoItems();
+        // stop editing the previous item
+        if (oldSelectedItemIndex !== undefined) {
+          updatedItems[oldSelectedItemIndex].title.editing = false;
+        }
 
-    const oldSelectedItemIndex = tahiState.getSelectedItemIndex();
+        // Set edit mode when the title is clicked
+        if (clickedIndex !== undefined && column.accessor === 'title') {
+          updatedItems[clickedIndex].title.editing = true;
+        }
 
-    // by default, stop editing the previous item
-    if (oldSelectedItemIndex !== undefined) {
-      updatedItems[oldSelectedItemIndex] = {
-        ...updatedItems[oldSelectedItemIndex],
-        title: { ...updatedItems[oldSelectedItemIndex].title, editing: false },
-      };
-    }
-
-    if (clickedIndex !== undefined) {
-      // Set edit mode when the title is clicked
-      if (column.accessor === 'title') {
-        updatedItems[clickedIndex] = {
-          ...updatedItems[clickedIndex],
-          title: { ...updatedItems[clickedIndex].title, editing: true },
-        };
-      }
-      // Toggle the done state when the checkbox is clicked
-      if (column.accessor === 'done') {
-        updatedItems[clickedIndex] = {
-          ...updatedItems[clickedIndex],
-          done: !updatedItems[clickedIndex].done,
-        };
-      }
-    }
-    setTahiState(updatedState);
+        // Toggle the done state when the checkbox is clicked
+        if (clickedIndex !== undefined && column.accessor === 'done') {
+          updatedItems[clickedIndex].done = !updatedItems[clickedIndex].done;
+        }
+      }),
+    );
   };
 
   const handleInputChange = (record: TodoItem, newValue: string): void => {
-    const tahiStateCopy = tahiState.shallowCopy();
-    tahiStateCopy.setSelectedItemId(record.id);
-    tahiStateCopy.replaceItem(tahiState.getSelectedItemIndex()!, {
-      ...record,
-      title: { value: newValue, editing: true },
-    });
-    setTahiState(tahiStateCopy);
+    setTahiState((prevState) =>
+      produce(prevState, (tahiStateCopy) => {
+        tahiStateCopy.selectedItemId = record.id;
+        const recordIndex = computeSelectedItemIndex(tahiStateCopy);
+        tahiStateCopy.selectedItemIndex = recordIndex;
+        tahiStateCopy.todoItems[recordIndex].title.value = newValue;
+        tahiStateCopy.todoItems[recordIndex].title.editing = true;
+      }),
+    );
   };
 
   const columns = [
@@ -94,7 +88,7 @@ export default function Todolist(): React.JSX.Element {
 
   return (
     <DataTable
-      records={tahiState.getTodoItems()}
+      records={tahiState.todoItems}
       columns={columns}
       withTableBorder
       highlightOnHover
@@ -102,7 +96,7 @@ export default function Todolist(): React.JSX.Element {
         handleCellClick(record as TodoItem, column);
       }}
       rowBackgroundColor={({ id }) =>
-        tahiState.getSelectedItemId() === id ? { dark: '#444444', light: '#eeeeee' } : undefined
+        tahiState.selectedItemId === id ? { dark: '#444444', light: '#eeeeee' } : undefined
       }
     />
   );

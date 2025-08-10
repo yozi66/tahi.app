@@ -3,21 +3,25 @@ import Todolist from '../Todolist/Todolist';
 import { Allotment } from 'allotment';
 import { TodoContext } from '../../data/TodoContext';
 import { useContext } from 'react';
+import { produce } from 'immer';
 
 export default function TodolistSplit(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
 
-  function handleInputChange(value: string): void {
-    const selectedItemIndex = tahiState.getSelectedItemIndex();
-    const selectedItem = tahiState.getSelectedItem();
-    if (!selectedItem || !selectedItemIndex) {
-      return;
-    }
-    const updatedItem = { ...selectedItem, comments: value };
-    const updatedState = tahiState.shallowCopy();
-    updatedState.replaceItem(selectedItemIndex, updatedItem);
-    setTahiState(updatedState);
-  }
+  const handleInputChange = (value: string): void =>
+    setTahiState((prevState) =>
+      produce(prevState, (updatedState) => {
+        const selectedItemIndex = prevState.selectedItemIndex;
+        if (selectedItemIndex === undefined) {
+          return;
+        }
+        const selectedItem = updatedState.todoItems[selectedItemIndex];
+        if (!selectedItem) {
+          return;
+        }
+        selectedItem.comments = value;
+      }),
+    );
 
   return (
     <Box
@@ -31,7 +35,12 @@ export default function TodolistSplit(): React.JSX.Element {
         <Allotment.Pane minSize={65}>
           <Textarea
             label="Task comments"
-            value={tahiState.getSelectedItem()?.comments || ''}
+            value={
+              tahiState.selectedItemId !== undefined &&
+              tahiState.todoItems[tahiState.selectedItemId]
+                ? tahiState.todoItems[tahiState.selectedItemId].comments
+                : ''
+            }
             styles={{
               root: { height: '100%' },
               input: { height: `calc(100% - 30px)`, resize: 'none' },

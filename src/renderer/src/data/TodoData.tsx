@@ -137,10 +137,10 @@ const items = [
   {
     id: 18,
     title: { value: 'use immer for copy on write' },
-    done: false,
+    done: true,
     comments: `The TahiState should use immer for copy on write
-    - immer allows to mutate the state directly
-    - this simplifies the code and makes it more readable
+    - create a pure function that updates the index of the selected todo
+     based on the selected todo id
     - see https://immerjs.github.io/immer/`,
   },
   {
@@ -184,4 +184,9 @@ const items = [
     - if no todo is selected, it should show all todos`,
   },
 ];
-export const sampleState = new TahiState(items);
+
+export const sampleState: TahiState = {
+  selectedItemId: 1,
+  selectedItemIndex: 0,
+  todoItems: items,
+};
