@@ -3,8 +3,8 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { TahiState, TodoItem } from '../../TodoData';
-import { TodoContext } from '../../TodoContext';
+import { TahiState, TodoItem } from '../../data/TodoData';
+import { TodoContext } from '../../data/TodoContext';
 import { useContext } from 'react';
 
 export default function Todolist(): React.JSX.Element {
