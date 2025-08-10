@@ -35,7 +35,7 @@ export default function TodolistSplit(): React.JSX.Element {
             styles={{
               root: { height: '100%' },
               input: { height: `calc(100% - 30px)`, resize: 'none' },
-              wrapper: { height: '100%' }
+              wrapper: { height: '100%' },
             }}
             onChange={(e) => {
               handleInputChange(e.target.value);

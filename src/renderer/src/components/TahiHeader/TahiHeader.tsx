@@ -1,11 +1,14 @@
 import React from 'react';
 import { Burger, Group } from '@mantine/core';
 import tahiLogo from '../../assets/tahi_logo_v3_32px.png';
-import { useDisclosure } from '@mantine/hooks';
+import { useAppState } from '@/data/AppState';
 
 export function TahiHeader(): React.JSX.Element {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const mobileOpened = useAppState((state) => state.mobileOpened);
+  const desktopOpened = useAppState((state) => state.desktopOpened);
+  const toggleMobile = useAppState((state) => state.toggleMobile);
+  const toggleDesktop = useAppState((state) => state.toggleDesktop);
+
   return (
     <Group h="100%" px="md">
       <Burger

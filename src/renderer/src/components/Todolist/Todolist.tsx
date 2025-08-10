@@ -3,7 +3,8 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { TahiState, TodoItem } from '../../data/TodoData';
+import { TahiState } from '../../data/TahiState';
+import { TodoItem } from '../../data/TodoItem';
 import { TodoContext } from '../../data/TodoContext';
 import { useContext } from 'react';
 
@@ -24,7 +25,7 @@ export default function Todolist(): React.JSX.Element {
     if (oldSelectedItemIndex !== undefined) {
       updatedItems[oldSelectedItemIndex] = {
         ...updatedItems[oldSelectedItemIndex],
-        title: { ...updatedItems[oldSelectedItemIndex].title, editing: false }
+        title: { ...updatedItems[oldSelectedItemIndex].title, editing: false },
       };
     }
 
@@ -33,14 +34,14 @@ export default function Todolist(): React.JSX.Element {
       if (column.accessor === 'title') {
         updatedItems[clickedIndex] = {
           ...updatedItems[clickedIndex],
-          title: { ...updatedItems[clickedIndex].title, editing: true }
+          title: { ...updatedItems[clickedIndex].title, editing: true },
         };
       }
       // Toggle the done state when the checkbox is clicked
       if (column.accessor === 'done') {
         updatedItems[clickedIndex] = {
           ...updatedItems[clickedIndex],
-          done: !updatedItems[clickedIndex].done
+          done: !updatedItems[clickedIndex].done,
         };
       }
     }
@@ -52,7 +53,7 @@ export default function Todolist(): React.JSX.Element {
     tahiStateCopy.setSelectedItemId(record.id);
     tahiStateCopy.replaceItem(tahiState.getSelectedItemIndex()!, {
       ...record,
-      title: { value: newValue, editing: true }
+      title: { value: newValue, editing: true },
     });
     setTahiState(tahiStateCopy);
   };
@@ -64,7 +65,7 @@ export default function Todolist(): React.JSX.Element {
       title: 'Done',
       render: ({ done }: Pick<TodoItem, 'done'>) => (
         <input type="checkbox" checked={done} readOnly />
-      )
+      ),
     },
     {
       accessor: 'title',
@@ -86,9 +87,9 @@ export default function Todolist(): React.JSX.Element {
             {title.value}
           </Text>
         );
-      }
+      },
     },
-    { accessor: 'comments', title: 'Comments', ellipsis: true }
+    { accessor: 'comments', title: 'Comments', ellipsis: true },
   ];
 
   return (

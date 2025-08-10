@@ -10,12 +10,12 @@ import { TahiNavbar } from './components/TahiNavbar/TahiNavbar';
 import { theme } from './theme';
 import { TodoContext } from './data/TodoContext';
 import { sampleState } from './data/TodoData';
-import { useDisclosure } from '@mantine/hooks';
+import { useAppState } from './data/AppState';
 
 export default function App(): React.JSX.Element {
   const [tahiState, setTahiState] = useState(sampleState);
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const mobileOpened = useAppState((state) => state.mobileOpened);
+  const desktopOpened = useAppState((state) => state.desktopOpened);
 
   return (
     <MantineProvider theme={theme}>
