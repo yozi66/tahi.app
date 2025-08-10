@@ -88,6 +88,14 @@ const items = [
     - if no todo is selected, it should delete the last todo`,
   },
   {
+    id: 12,
+    title: { value: 'move the app to electron' },
+    done: true,
+    comments: `make to app a desktop app
+    - make to app work with electron
+    - the app should run on Windows, macOS and Linux`,
+  },
+  {
     id: 13,
     title: { value: 'add a button to save the todo list' },
     done: false,
@@ -119,6 +127,21 @@ const items = [
     - the button should import the todo list from a JSON file
     - the file should be named todos.json
     - if the file is not found, it should show a message`,
+  },
+  {
+    id: 17,
+    title: { value: 'add a settings dialog' },
+    done: false,
+    comments: `the app should have a settings dialog`,
+  },
+  {
+    id: 18,
+    title: { value: 'use immer for copy on write' },
+    done: false,
+    comments: `The TahiState should use immer for copy on write
+    - immer allows to mutate the state directly
+    - this simplifies the code and makes it more readable
+    - see https://immerjs.github.io/immer/`,
   },
   {
     id: 23,
