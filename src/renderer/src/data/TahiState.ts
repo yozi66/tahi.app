@@ -6,10 +6,6 @@ export type TahiState = {
   todoItems: TodoItem[];
 };
 
-export const computeSelectedItemIndex = (draftState: TahiState): number => {
-  if (draftState.selectedItemId === undefined) {
-    return 0;
-  } else {
-    return draftState.todoItems.findIndex((todo) => todo.id === draftState.selectedItemId);
-  }
+export const computeItemIndex = (todoItems: TodoItem[], target: TodoItem): number => {
+  return todoItems.findIndex((item) => item.id === target.id);
 };

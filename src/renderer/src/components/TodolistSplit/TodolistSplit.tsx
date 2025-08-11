@@ -9,13 +9,13 @@ export default function TodolistSplit(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
 
   const handleInputChange = (value: string): void =>
-    setTahiState((prevState) =>
-      produce(prevState, (updatedState) => {
-        const selectedItemIndex = prevState.selectedItemIndex;
+    setTahiState((oldState) =>
+      produce(oldState, (draftState) => {
+        const selectedItemIndex = oldState.selectedItemIndex;
         if (selectedItemIndex === undefined) {
           return;
         }
-        const selectedItem = updatedState.todoItems[selectedItemIndex];
+        const selectedItem = draftState.todoItems[selectedItemIndex];
         if (!selectedItem) {
           return;
         }
@@ -36,9 +36,9 @@ export default function TodolistSplit(): React.JSX.Element {
           <Textarea
             label="Task comments"
             value={
-              tahiState.selectedItemId !== undefined &&
-              tahiState.todoItems[tahiState.selectedItemId]
-                ? tahiState.todoItems[tahiState.selectedItemId].comments
+              tahiState.selectedItemIndex !== undefined &&
+              tahiState.todoItems[tahiState.selectedItemIndex]
+                ? tahiState.todoItems[tahiState.selectedItemIndex].comments
                 : ''
             }
             styles={{

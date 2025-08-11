@@ -3,7 +3,7 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { computeSelectedItemIndex } from '../../data/TahiState';
+import { computeItemIndex } from '../../data/TahiState';
 import { TodoItem } from '../../data/TodoItem';
 import { TodoContext } from '../../data/TodoContext';
 import { useContext } from 'react';
@@ -13,41 +13,52 @@ export default function Todolist(): React.JSX.Element {
   const { tahiState, setTahiState } = useContext(TodoContext);
 
   const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>): void => {
-    setTahiState((prevState) =>
-      produce(prevState, (updatedState) => {
+    setTahiState((oldState) =>
+      produce(oldState, (draftState) => {
         const clickedItemId = record.id;
-        updatedState.selectedItemId = clickedItemId;
-        const clickedIndex = computeSelectedItemIndex(updatedState);
-        updatedState.selectedItemIndex = clickedIndex;
-        const updatedItems = updatedState.todoItems;
-        const oldSelectedItemIndex = tahiState.selectedItemIndex;
+        draftState.selectedItemId = clickedItemId;
+        const clickedIndex = computeItemIndex(draftState.todoItems, record);
+        draftState.selectedItemIndex = clickedIndex;
+        const draftItems = draftState.todoItems;
+        const oldSelectedItemIndex = oldState.selectedItemIndex;
 
         // stop editing the previous item
         if (oldSelectedItemIndex !== undefined) {
-          updatedItems[oldSelectedItemIndex].title.editing = false;
+          draftItems[oldSelectedItemIndex].title.editing = false;
         }
 
         // Set edit mode when the title is clicked
         if (clickedIndex !== undefined && column.accessor === 'title') {
-          updatedItems[clickedIndex].title.editing = true;
+          draftItems[clickedIndex].title.editing = true;
         }
 
         // Toggle the done state when the checkbox is clicked
         if (clickedIndex !== undefined && column.accessor === 'done') {
-          updatedItems[clickedIndex].done = !updatedItems[clickedIndex].done;
+          draftItems[clickedIndex].done = !draftItems[clickedIndex].done;
         }
       }),
     );
   };
 
   const handleInputChange = (record: TodoItem, newValue: string): void => {
-    setTahiState((prevState) =>
-      produce(prevState, (tahiStateCopy) => {
-        tahiStateCopy.selectedItemId = record.id;
-        const recordIndex = computeSelectedItemIndex(tahiStateCopy);
-        tahiStateCopy.selectedItemIndex = recordIndex;
-        tahiStateCopy.todoItems[recordIndex].title.value = newValue;
-        tahiStateCopy.todoItems[recordIndex].title.editing = true;
+    setTahiState((oldState) =>
+      produce(oldState, (draftState) => {
+        if (draftState.selectedItemId != record.id) {
+          console.warn(`Selected item ID ${draftState.selectedItemId} 
+            does not match the record ID ${record.id}`);
+          return;
+        }
+        const recordIndex = draftState.selectedItemIndex;
+        if (recordIndex === undefined) {
+          console.warn('Selected item index is undefined');
+          return;
+        }
+        if (draftState.todoItems[recordIndex].title.editing === false) {
+          console.warn('Title is not in editing mode');
+          return;
+        }
+        draftState.todoItems[recordIndex].title.value = newValue;
+        draftState.todoItems[recordIndex].title.editing = true;
       }),
     );
   };
