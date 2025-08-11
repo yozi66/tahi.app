@@ -73,22 +73,6 @@ const items = [
   },
   {
     id: 10,
-    title: { value: 'add a button to add new todos' },
-    done: false,
-    comments: `add a button to add new todos
-    - the button should open a dialog to enter the title and comments
-    - the new todo should be added to the top of the list`,
-  },
-  {
-    id: 11,
-    title: { value: 'add a button to delete todos' },
-    done: false,
-    comments: `add a button to delete todos
-    - the button should delete the selected todo
-    - if no todo is selected, it should delete the last todo`,
-  },
-  {
-    id: 12,
     title: { value: 'move the app to electron' },
     done: true,
     comments: `make to app a desktop app
@@ -96,46 +80,7 @@ const items = [
     - the app should run on Windows, macOS and Linux`,
   },
   {
-    id: 13,
-    title: { value: 'add a button to save the todo list' },
-    done: false,
-    comments: `add a button to save the todo list
-    - the button should save the todo list to localStorage
-    - if the todo list is empty, it should show a message`,
-  },
-  {
-    id: 14,
-    title: { value: 'add a button to load the todo list' },
-    done: false,
-    comments: `add a button to load the todo list
-    - the button should load the todo list from localStorage
-    - if the todo list is empty, it should show a message`,
-  },
-  {
-    id: 15,
-    title: { value: 'add a button to export the todo list' },
-    done: false,
-    comments: `add a button to export the todo list
-    - the button should export the todo list to a JSON file
-    - the file should be named todos.json`,
-  },
-  {
-    id: 16,
-    title: { value: 'add a button to import the todo list' },
-    done: false,
-    comments: `add a button to import the todo list
-    - the button should import the todo list from a JSON file
-    - the file should be named todos.json
-    - if the file is not found, it should show a message`,
-  },
-  {
-    id: 17,
-    title: { value: 'add a settings dialog' },
-    done: false,
-    comments: `the app should have a settings dialog`,
-  },
-  {
-    id: 18,
+    id: 11,
     title: { value: 'use immer for copy on write' },
     done: true,
     comments: `The TahiState should use immer for copy on write
@@ -144,7 +89,78 @@ const items = [
     - see https://immerjs.github.io/immer/`,
   },
   {
-    id: 23,
+    id: 12,
+    title: { value: 'fix the selection bug' },
+    done: false,
+    comments: `Clicking a line copies the comments from the next line into the comments editor.
+    - or simetimes nothing at all
+    - the comments editor does not edit the comments of the selected todo`,
+  },
+  {
+    id: 13,
+    title: { value: 'use Redux Toolkit for state management' },
+    done: false,
+    comments: `There are two state management methods in use, react createContext (TodoContext) and zustand (AppState).
+    - Redux Toolkit may be a better choice for state management
+    - with slicing for different parts of the state`,
+  },
+  {
+    id: 110,
+    title: { value: 'add a button to add new todos' },
+    done: false,
+    comments: `add a button to add new todos
+    - the button should open a dialog to enter the title and comments
+    - the new todo should be added to the top of the list`,
+  },
+  {
+    id: 111,
+    title: { value: 'add a button to delete todos' },
+    done: false,
+    comments: `add a button to delete todos
+    - the button should delete the selected todo
+    - if no todo is selected, it should delete the last todo`,
+  },
+  {
+    id: 113,
+    title: { value: 'add a button to save the todo list' },
+    done: false,
+    comments: `add a button to save the todo list
+    - the button should save the todo list to localStorage
+    - if the todo list is empty, it should show a message`,
+  },
+  {
+    id: 114,
+    title: { value: 'add a button to load the todo list' },
+    done: false,
+    comments: `add a button to load the todo list
+    - the button should load the todo list from localStorage
+    - if the todo list is empty, it should show a message`,
+  },
+  {
+    id: 115,
+    title: { value: 'add a button to export the todo list' },
+    done: false,
+    comments: `add a button to export the todo list
+    - the button should export the todo list to a JSON file
+    - the file should be named todos.json`,
+  },
+  {
+    id: 116,
+    title: { value: 'add a button to import the todo list' },
+    done: false,
+    comments: `add a button to import the todo list
+    - the button should import the todo list from a JSON file
+    - the file should be named todos.json
+    - if the file is not found, it should show a message`,
+  },
+  {
+    id: 117,
+    title: { value: 'add a settings dialog' },
+    done: false,
+    comments: `the app should have a settings dialog`,
+  },
+  {
+    id: 123,
     title: { value: 'add a button to filter the todo list' },
     done: false,
     comments: `add a button to filter the todo list
@@ -152,7 +168,7 @@ const items = [
     - if no todo is selected, it should filter the todo list by title`,
   },
   {
-    id: 24,
+    id: 124,
     title: { value: 'add a button to search the todo list' },
     done: false,
     comments: `add a button to search the todo list
@@ -160,7 +176,7 @@ const items = [
     - if no todo is selected, it should search the todo list by title`,
   },
   {
-    id: 25,
+    id: 125,
     title: { value: 'add a button to clear the search' },
     done: false,
     comments: `add a button to clear the search
@@ -168,7 +184,7 @@ const items = [
     - if no todo is selected, it should clear the search`,
   },
   {
-    id: 27,
+    id: 127,
     title: { value: 'add a button to hide completed todos' },
     done: false,
     comments: `add a button to hide completed todos
@@ -176,7 +192,7 @@ const items = [
     - if no todo is selected, it should hide completed todos`,
   },
   {
-    id: 28,
+    id: 128,
     title: { value: 'add a button to show all todos' },
     done: false,
     comments: `add a button to show all todos
