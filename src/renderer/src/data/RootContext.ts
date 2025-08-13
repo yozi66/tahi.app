@@ -1,13 +1,13 @@
 // This is the old part using react context (to be replaced by Redux)
 
 import { createContext } from 'react';
-import { EditorState } from './EditorState';
-import { sampleState } from './TodoData';
+import { TodolistState } from './TodolistState';
+import { sampleListState } from './sampleListState';
 
 export const TodoContext = createContext<{
-  tahiState: EditorState;
-  setTahiState: React.Dispatch<React.SetStateAction<EditorState>>;
-}>({ tahiState: sampleState, setTahiState: () => {} });
+  tahiState: TodolistState;
+  setTahiState: React.Dispatch<React.SetStateAction<TodolistState>>;
+}>({ tahiState: sampleListState, setTahiState: () => {} });
 
 // this is the new part using Redux
 

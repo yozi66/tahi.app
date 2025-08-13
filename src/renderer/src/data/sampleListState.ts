@@ -1,4 +1,4 @@
-import { EditorState } from './EditorState';
+import { TodolistState } from './TodolistState';
 
 const items = [
   {
@@ -209,7 +209,7 @@ const items = [
   },
 ];
 
-export const sampleState: EditorState = {
+export const sampleListState: TodolistState = {
   selectedItemId: 1,
   selectedItemIndex: 0,
   todoItems: items,

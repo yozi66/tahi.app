@@ -1,7 +1,7 @@
 import { TodoItem } from './TodoItem';
-import { sampleState } from './TodoData';
+import { sampleListState } from './sampleListState';
 
-export type EditorState = {
+export type TodolistState = {
   selectedItemId?: number;
   selectedItemIndex?: number;
   todoItems: TodoItem[];
@@ -11,4 +11,4 @@ export const computeItemIndex = (todoItems: TodoItem[], target: TodoItem): numbe
   return todoItems.findIndex((item) => item.id === target.id);
 };
 
-export const createEditorSlice = (): EditorState => sampleState;
+export const createEditorSlice = (): TodolistState => sampleListState;

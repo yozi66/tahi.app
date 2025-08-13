@@ -9,12 +9,12 @@ import { TahiRoutes } from './TahiRouter';
 import { TahiNavbar } from './components/TahiNavbar/TahiNavbar';
 import { theme } from './theme';
 import { TodoContext } from './data/RootContext';
-import { sampleState } from './data/TodoData';
+import { sampleListState } from './data/sampleListState';
 import { useAppSelector } from './app/hooks';
 import { selectMobileOpened, selectDesktopOpened } from './data/NavbarSlice';
 
 export default function App(): React.JSX.Element {
-  const [tahiState, setTahiState] = useState(sampleState);
+  const [tahiState, setTahiState] = useState(sampleListState);
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
 
