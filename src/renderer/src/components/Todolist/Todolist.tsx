@@ -3,9 +3,9 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { computeItemIndex } from '../../data/TahiState';
+import { computeItemIndex } from '../../data/EditorState';
 import { TodoItem } from '../../data/TodoItem';
-import { TodoContext } from '../../data/TodoContext';
+import { TodoContext } from '../../data/RootContext';
 import { useContext } from 'react';
 import { produce } from 'immer';
 

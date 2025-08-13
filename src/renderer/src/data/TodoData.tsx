@@ -1,4 +1,4 @@
-import { TahiState } from './TahiState';
+import { EditorState } from './EditorState';
 
 const items = [
   {
@@ -91,18 +91,25 @@ const items = [
   {
     id: 12,
     title: { value: 'fix the selection bug' },
-    done: false,
+    done: true,
     comments: `Clicking a line copies the comments from the next line into the comments editor.
     - or simetimes nothing at all
     - the comments editor does not edit the comments of the selected todo`,
   },
   {
     id: 13,
-    title: { value: 'use Redux Toolkit for state management' },
+    title: { value: 'use Redux Toolkit for editor state management' },
     done: false,
-    comments: `There are two state management methods in use, react createContext (TodoContext) and zustand (AppState).
-    - Redux Toolkit may be a better choice for state management
-    - with slicing for different parts of the state`,
+    comments: `There are two state management methods in use, 
+    react createContext (TodoContext) and zustand (AppState).
+    - Redux Toolkit is a better choice for state management
+    - with slicing for different parts of the state
+    - see https://redux-toolkit.js.org/tutorials/typescript#using-slices
+    - see also https://redux.js.org/usage/usage-with-typescript
+    - even if zustand is simpler in general and supports slices
+    - see https://zustand.docs.pmnd.rs/guides/slices-pattern
+    - slicing with typescript is cumbersome with zustand
+    - see also https://zustand.docs.pmnd.rs/guides/typescript`,
   },
   {
     id: 110,
@@ -126,7 +133,8 @@ const items = [
     done: false,
     comments: `add a button to save the todo list
     - the button should save the todo list to localStorage
-    - if the todo list is empty, it should show a message`,
+    - if the todo list is empty, it should show a message
+    - see https://app.studyraid.com/en/read/11947/381038/async-actions-in-zustand`,
   },
   {
     id: 114,
@@ -201,7 +209,7 @@ const items = [
   },
 ];
 
-export const sampleState: TahiState = {
+export const sampleState: EditorState = {
   selectedItemId: 1,
   selectedItemIndex: 0,
   todoItems: items,

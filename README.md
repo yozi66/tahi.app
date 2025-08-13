@@ -35,6 +35,12 @@ $ npm run build:linux
 
 ## Log
 
+### versions
+
+* 0.0.3 Redux prototype
+* 0.0.2 Electron prototype
+* 0.0.1 React prototype
+
 ### build
 
 The `npm run build:win` script needs permission to create symlinks. Windows settings / System / For developers / Developer Mode: On -> enables symlinks without being Administrator

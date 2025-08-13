@@ -8,14 +8,15 @@ import { TahiHeader } from './components/TahiHeader/TahiHeader';
 import { TahiRoutes } from './TahiRouter';
 import { TahiNavbar } from './components/TahiNavbar/TahiNavbar';
 import { theme } from './theme';
-import { TodoContext } from './data/TodoContext';
+import { TodoContext } from './data/RootContext';
 import { sampleState } from './data/TodoData';
-import { useAppState } from './data/AppState';
+import { useAppSelector } from './app/hooks';
+import { selectMobileOpened, selectDesktopOpened } from './data/NavbarSlice';
 
 export default function App(): React.JSX.Element {
   const [tahiState, setTahiState] = useState(sampleState);
-  const mobileOpened = useAppState((state) => state.mobileOpened);
-  const desktopOpened = useAppState((state) => state.desktopOpened);
+  const mobileOpened = useAppSelector(selectMobileOpened);
+  const desktopOpened = useAppSelector(selectDesktopOpened);
 
   return (
     <MantineProvider theme={theme}>

@@ -1,7 +1,7 @@
 import { Box, Textarea } from '@mantine/core';
 import Todolist from '../Todolist/Todolist';
 import { Allotment } from 'allotment';
-import { TodoContext } from '../../data/TodoContext';
+import { TodoContext } from '../../data/RootContext';
 import { useContext } from 'react';
 import { produce } from 'immer';
 
