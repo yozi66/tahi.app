@@ -3,13 +3,13 @@ import { TodolistState } from './TodolistState';
 const items = [
   {
     id: 1,
-    title: { value: 'set up table columns' },
+    title: 'set up table columns',
     done: true,
     comments: 'We start with title and comments',
   },
   {
     id: 2,
-    title: { value: 'add checkboxes' },
+    title: 'add checkboxes',
     done: true,
     comments: `Ops, there are two functions for checkboxes
     - multi-select: allows selecting multiple rows
@@ -17,14 +17,14 @@ const items = [
   },
   {
     id: 3,
-    title: { value: 'make the checkbox clickable' },
+    title: 'make the checkbox clickable',
     done: true,
     comments: `figure out how to make the checkbox clickable 
     and toggle the done state`,
   },
   {
     id: 4,
-    title: { value: 'prevent line breaks' },
+    title: 'prevent line breaks',
     done: true,
     comments: `prevent line breaks in the table cells
     - use ellipsis for overflow text
@@ -32,14 +32,14 @@ const items = [
   },
   {
     id: 5,
-    title: { value: 'electron prototype' },
+    title: 'electron prototype',
     done: true,
     comments: `prepare for load and save of the todo list
     - use electron for desktop app`,
   },
   {
     id: 6,
-    title: { value: 'define the concept for editing todos' },
+    title: 'define the concept for editing todos',
     done: true,
     comments: `decide how to edit todos, in place or below the table
     - in place: edit the title directly in the table
@@ -48,14 +48,14 @@ const items = [
   },
   {
     id: 7,
-    title: { value: 'add in-place editor for the title' },
+    title: 'add in-place editor for the title',
     done: true,
     comments: `implement an in-place editor for the title
     - clicking the title opens an input field`,
   },
   {
     id: 8,
-    title: { value: 'add editor for comments' },
+    title: 'add editor for comments',
     done: true,
     comments: `the last clicked line is selected
     - clicking a row copies the comments to the textarea below the table
@@ -64,7 +64,7 @@ const items = [
   },
   {
     id: 9,
-    title: { value: 'add split layout' },
+    title: 'add split layout',
     done: true,
     comments: `add a splitter between the table and the textarea
     - use a library like react-split-pane or allotment
@@ -73,7 +73,7 @@ const items = [
   },
   {
     id: 10,
-    title: { value: 'move the app to electron' },
+    title: 'move the app to electron',
     done: true,
     comments: `make to app a desktop app
     - make to app work with electron
@@ -81,7 +81,7 @@ const items = [
   },
   {
     id: 11,
-    title: { value: 'use immer for copy on write' },
+    title: 'use immer for copy on write',
     done: true,
     comments: `The TahiState should use immer for copy on write
     - create a pure function that updates the index of the selected todo
@@ -90,7 +90,7 @@ const items = [
   },
   {
     id: 12,
-    title: { value: 'fix the selection bug' },
+    title: 'fix the selection bug',
     done: true,
     comments: `Clicking a line copies the comments from the next line into the comments editor.
     - or simetimes nothing at all
@@ -98,7 +98,7 @@ const items = [
   },
   {
     id: 13,
-    title: { value: 'use Redux Toolkit for editor state management' },
+    title: 'use Redux Toolkit for editor state management',
     done: false,
     comments: `There are two state management methods in use, 
     react createContext (TodoContext) and zustand (AppState).
@@ -112,8 +112,17 @@ const items = [
     - see also https://zustand.docs.pmnd.rs/guides/typescript`,
   },
   {
+    id: 14,
+    title: 'move the editing title flag out from todoitem',
+    done: true,
+    comments: `TodoItem should not have an editing flag.
+    - the editing flag should be in the state, not in the item
+    - the editing flag should always refert to the selected item
+    - it is not clear how to read the state form the table cell renderer code`,
+  },
+  {
     id: 110,
-    title: { value: 'add a button to add new todos' },
+    title: 'add a button to add new todos',
     done: false,
     comments: `add a button to add new todos
     - the button should open a dialog to enter the title and comments
@@ -121,7 +130,7 @@ const items = [
   },
   {
     id: 111,
-    title: { value: 'add a button to delete todos' },
+    title: 'add a button to delete todos',
     done: false,
     comments: `add a button to delete todos
     - the button should delete the selected todo
@@ -129,7 +138,7 @@ const items = [
   },
   {
     id: 113,
-    title: { value: 'add a button to save the todo list' },
+    title: 'add a button to save the todo list',
     done: false,
     comments: `add a button to save the todo list
     - the button should save the todo list to localStorage
@@ -138,7 +147,7 @@ const items = [
   },
   {
     id: 114,
-    title: { value: 'add a button to load the todo list' },
+    title: 'add a button to load the todo list',
     done: false,
     comments: `add a button to load the todo list
     - the button should load the todo list from localStorage
@@ -146,7 +155,7 @@ const items = [
   },
   {
     id: 115,
-    title: { value: 'add a button to export the todo list' },
+    title: 'add a button to export the todo list',
     done: false,
     comments: `add a button to export the todo list
     - the button should export the todo list to a JSON file
@@ -154,7 +163,7 @@ const items = [
   },
   {
     id: 116,
-    title: { value: 'add a button to import the todo list' },
+    title: 'add a button to import the todo list',
     done: false,
     comments: `add a button to import the todo list
     - the button should import the todo list from a JSON file
@@ -163,13 +172,13 @@ const items = [
   },
   {
     id: 117,
-    title: { value: 'add a settings dialog' },
+    title: 'add a settings dialog',
     done: false,
     comments: `the app should have a settings dialog`,
   },
   {
     id: 123,
-    title: { value: 'add a button to filter the todo list' },
+    title: 'add a button to filter the todo list',
     done: false,
     comments: `add a button to filter the todo list
     - the button should filter the todo list by title
@@ -177,7 +186,7 @@ const items = [
   },
   {
     id: 124,
-    title: { value: 'add a button to search the todo list' },
+    title: 'add a button to search the todo list',
     done: false,
     comments: `add a button to search the todo list
     - the button should search the todo list by title
@@ -185,7 +194,7 @@ const items = [
   },
   {
     id: 125,
-    title: { value: 'add a button to clear the search' },
+    title: 'add a button to clear the search',
     done: false,
     comments: `add a button to clear the search
     - the button should clear the search
@@ -193,7 +202,7 @@ const items = [
   },
   {
     id: 127,
-    title: { value: 'add a button to hide completed todos' },
+    title: 'add a button to hide completed todos',
     done: false,
     comments: `add a button to hide completed todos
     - the button should hide completed todos
@@ -201,7 +210,7 @@ const items = [
   },
   {
     id: 128,
-    title: { value: 'add a button to show all todos' },
+    title: 'add a button to show all todos',
     done: false,
     comments: `add a button to show all todos
     - the button should show all todos

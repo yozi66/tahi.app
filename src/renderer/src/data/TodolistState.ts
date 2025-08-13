@@ -4,6 +4,7 @@ import { sampleListState } from './sampleListState';
 export type TodolistState = {
   selectedItemId?: number;
   selectedItemIndex?: number;
+  editingTitle?: boolean;
   todoItems: TodoItem[];
 };
 

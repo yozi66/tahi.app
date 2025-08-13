@@ -20,17 +20,9 @@ export default function Todolist(): React.JSX.Element {
         const clickedIndex = computeItemIndex(draftState.todoItems, record);
         draftState.selectedItemIndex = clickedIndex;
         const draftItems = draftState.todoItems;
-        const oldSelectedItemIndex = oldState.selectedItemIndex;
-
-        // stop editing the previous item
-        if (oldSelectedItemIndex !== undefined) {
-          draftItems[oldSelectedItemIndex].title.editing = false;
-        }
 
         // Set edit mode when the title is clicked
-        if (clickedIndex !== undefined && column.accessor === 'title') {
-          draftItems[clickedIndex].title.editing = true;
-        }
+        draftState.editingTitle = column.accessor === 'title';
 
         // Toggle the done state when the checkbox is clicked
         if (clickedIndex !== undefined && column.accessor === 'done') {
@@ -53,12 +45,11 @@ export default function Todolist(): React.JSX.Element {
           console.warn('Selected item index is undefined');
           return;
         }
-        if (draftState.todoItems[recordIndex].title.editing === false) {
+        if (draftState.editingTitle === false) {
           console.warn('Title is not in editing mode');
           return;
         }
-        draftState.todoItems[recordIndex].title.value = newValue;
-        draftState.todoItems[recordIndex].title.editing = true;
+        draftState.todoItems[recordIndex].title = newValue;
       }),
     );
   };
@@ -77,19 +68,20 @@ export default function Todolist(): React.JSX.Element {
       title: 'Title',
       render: (todo: TodoItem) => {
         const title = todo.title;
-        const chars = title.value.length;
+        const chars = title.length;
         const width = chars < 20 ? '140px' : `${chars * 7}px`;
-        return title.editing ? (
+        const editing = todo.id === tahiState.selectedItemId && tahiState.editingTitle;
+        return editing ? (
           <input
             type="text"
-            value={title.value}
+            value={title}
             style={{ width: `${width}` }}
             onChange={(e) => handleInputChange(todo, e.target.value)}
             autoFocus
           />
         ) : (
           <Text truncate="end" size="sm">
-            {title.value}
+            {title}
           </Text>
         );
       },

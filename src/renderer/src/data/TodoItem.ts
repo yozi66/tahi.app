@@ -1,11 +1,6 @@
-type EditableString = {
-  value: string;
-  editing?: boolean;
-};
-
 export type TodoItem = {
   id: number;
-  title: EditableString;
+  title: string;
   done: boolean;
   comments: string;
 };
