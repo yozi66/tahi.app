@@ -1,10 +1,10 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/src/env.d.ts",
-    "src/renderer/src/**/*",
-    "src/renderer/src/**/*.tsx",
-    "src/renderer/test-utils",
+    "renderer/src/env.d.ts",
+    "renderer/src/**/*",
+    "renderer/src/**/*.tsx",
+    "renderer/test-utils",
     "electron/preload/*.d.ts"
   ],
   "compilerOptions": {
@@ -28,16 +28,22 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/renderer/src/*"
+        "renderer/src/*"
+      ],
+      "@app": [
+        "renderer/src/app"
       ],
       "@components/*": [
-        "src/renderer/src/components/*"
+        "renderer/src/components/*"
+      ],
+      "@data": [
+        "renderer/src/data"
       ],
       "@pages/*": [
-        "src/renderer/src/pages"
+        "renderer/src/pages"
       ],
       "@test-utils": [
-        "src/renderer/test-utils"
+        "renderer/test-utils"
       ]
     }
   }
