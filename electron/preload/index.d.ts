@@ -1,9 +1,9 @@
-import { ElectronAPI } from '@electron-toolkit/preload'
+import { ElectronAPI } from '@electron-toolkit/preload';
 
 // Define the types for your custom APIs here
 interface IApi {
-  getVersions: () => Promise<NodeJS.ProcessVersions>
-  ping: () => void
+  getVersions: () => Promise<NodeJS.ProcessVersions>;
+  ping: () => void;
   // Add other custom API methods here
   // For example:
   // saveSettings: (settings: any) => void;
@@ -11,7 +11,7 @@ interface IApi {
 
 declare global {
   interface Window {
-    electron: ElectronAPI
-    api: IApi
+    electron: ElectronAPI;
+    api: IApi;
   }
 }
