@@ -1,20 +1,8 @@
-// This is the old part using react context (to be replaced by Redux)
-
-import { createContext } from 'react';
-import { TodolistSlice } from './TodolistSlice';
-import { sampleListState } from './sampleListState';
-
-export const TodoContext = createContext<{
-  tahiState: TodolistSlice;
-  setTahiState: React.Dispatch<React.SetStateAction<TodolistSlice>>;
-}>({ tahiState: sampleListState, setTahiState: () => {} });
-
-// this is the new part using Redux
-
 import { combineSlices, configureStore } from '@reduxjs/toolkit';
 import { navbarSlice } from './NavbarSlice';
+import { todolistSlice } from './TodolistSlice';
 
-const rootReducer = combineSlices(navbarSlice);
+const rootReducer = combineSlices(navbarSlice, todolistSlice);
 
 export type RootState = ReturnType<typeof rootReducer>;
 

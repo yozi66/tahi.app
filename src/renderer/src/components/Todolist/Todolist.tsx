@@ -3,55 +3,45 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { computeItemIndex } from '../../data/TodolistSlice';
 import { TodoItem } from '../../data/TodoItem';
-import { TodoContext } from '../../data/RootContext';
-import { useContext } from 'react';
-import { produce } from 'immer';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import {
+  setSelectedItemId,
+  setEditingTitle,
+  setSelectedTitle,
+  toggleDone,
+} from '@/data/TodolistSlice';
 
 export default function Todolist(): React.JSX.Element {
-  const { tahiState, setTahiState } = useContext(TodoContext);
+  const dispatch = useAppDispatch();
+  const tahiState = useAppSelector((state) => state.todolist);
 
   const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>): void => {
-    setTahiState((oldState) =>
-      produce(oldState, (draftState) => {
-        const clickedItemId = record.id;
-        draftState.selectedItemId = clickedItemId;
-        const clickedIndex = computeItemIndex(draftState.todoItems, record);
-        draftState.selectedItemIndex = clickedIndex;
-        const draftItems = draftState.todoItems;
+    // Update the selected item ID and index based on the clicked record
+    dispatch(setSelectedItemId(record.id));
 
-        // Set edit mode when the title is clicked
-        draftState.editingTitle = column.accessor === 'title';
+    // If the title is clicked, set the editing mode for the title.
+    dispatch(setEditingTitle(column.accessor === 'title'));
 
-        // Toggle the done state when the checkbox is clicked
-        if (clickedIndex !== undefined && column.accessor === 'done') {
-          draftItems[clickedIndex].done = !draftItems[clickedIndex].done;
-        }
-      }),
-    );
+    // If the done checkbox is clicked, toggle the done state of the item.
+    if (column.accessor === 'done') {
+      dispatch(toggleDone(record.id));
+    }
   };
 
   const handleInputChange = (record: TodoItem, newValue: string): void => {
-    setTahiState((oldState) =>
-      produce(oldState, (draftState) => {
-        if (draftState.selectedItemId != record.id) {
-          console.warn(`Selected item ID ${draftState.selectedItemId} 
-            does not match the record ID ${record.id}`);
-          return;
-        }
-        const recordIndex = draftState.selectedItemIndex;
-        if (recordIndex === undefined) {
-          console.warn('Selected item index is undefined');
-          return;
-        }
-        if (draftState.editingTitle === false) {
-          console.warn('Title is not in editing mode');
-          return;
-        }
-        draftState.todoItems[recordIndex].title = newValue;
-      }),
-    );
+    // Update the title of the selected item in editing mode
+    if (record.id !== tahiState.selectedItemId) {
+      console.warn(
+        `Selected item ID ${tahiState.selectedItemId} does not match the record ID ${record.id}`,
+      );
+      return;
+    }
+    if (tahiState.editingTitle === false) {
+      console.warn('Title is not in editing mode');
+      return;
+    }
+    dispatch(setSelectedTitle(newValue));
   };
 
   const columns = [

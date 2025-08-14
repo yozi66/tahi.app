@@ -1,28 +1,15 @@
 import { Box, Textarea } from '@mantine/core';
 import Todolist from '../Todolist/Todolist';
 import { Allotment } from 'allotment';
-import { TodoContext } from '../../data/RootContext';
-import { useContext } from 'react';
-import { produce } from 'immer';
+import { setSelectedComments } from '@/data/TodolistSlice';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 
 export default function TodolistSplit(): React.JSX.Element {
-  const { tahiState, setTahiState } = useContext(TodoContext);
-
-  const handleInputChange = (value: string): void =>
-    setTahiState((oldState) =>
-      produce(oldState, (draftState) => {
-        const selectedItemIndex = oldState.selectedItemIndex;
-        if (selectedItemIndex === undefined) {
-          return;
-        }
-        const selectedItem = draftState.todoItems[selectedItemIndex];
-        if (!selectedItem) {
-          return;
-        }
-        selectedItem.comments = value;
-        draftState.editingTitle = false; // Exit edit mode for title when editing comments
-      }),
-    );
+  const dispatch = useAppDispatch();
+  const tahiState = useAppSelector((state) => state.todolist);
+  const handleInputChange = (value: string): void => {
+    dispatch(setSelectedComments(value));
+  };
 
   return (
     <Box

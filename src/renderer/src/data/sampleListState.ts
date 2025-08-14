@@ -1,6 +1,4 @@
-import { TodolistSlice } from './TodolistSlice';
-
-const items = [
+export const sampleList = [
   {
     id: 1,
     title: 'set up table columns',
@@ -217,9 +215,3 @@ const items = [
     - if no todo is selected, it should show all todos`,
   },
 ];
-
-export const sampleListState: TodolistSlice = {
-  selectedItemId: 1,
-  selectedItemIndex: 0,
-  todoItems: items,
-};
