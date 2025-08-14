@@ -1,4 +1,4 @@
-import { TodolistState } from './TodolistState';
+import { TodolistSlice } from './TodolistSlice';
 
 const items = [
   {
@@ -218,7 +218,7 @@ const items = [
   },
 ];
 
-export const sampleListState: TodolistState = {
+export const sampleListState: TodolistSlice = {
   selectedItemId: 1,
   selectedItemIndex: 0,
   todoItems: items,

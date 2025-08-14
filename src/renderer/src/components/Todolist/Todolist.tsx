@@ -3,7 +3,7 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { computeItemIndex } from '../../data/TodolistState';
+import { computeItemIndex } from '../../data/TodolistSlice';
 import { TodoItem } from '../../data/TodoItem';
 import { TodoContext } from '../../data/RootContext';
 import { useContext } from 'react';

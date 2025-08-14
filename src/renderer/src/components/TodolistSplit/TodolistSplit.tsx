@@ -20,6 +20,7 @@ export default function TodolistSplit(): React.JSX.Element {
           return;
         }
         selectedItem.comments = value;
+        draftState.editingTitle = false; // Exit edit mode for title when editing comments
       }),
     );
 
