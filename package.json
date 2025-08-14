@@ -1,6 +1,6 @@
 {
   "name": "tahi.app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Todo app built with Electron and React",
   "main": "./out/main/index.js",
   "author": "frigo.hu",

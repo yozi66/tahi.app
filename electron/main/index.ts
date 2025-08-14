@@ -1,7 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import icon from '../../resources/tahi_icon_32px.png?asset';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
@@ -22,7 +21,6 @@ function createWindow(): void {
     icon: path.join(__dirname, '../../resources/tahi_icon_32px.png'),
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,

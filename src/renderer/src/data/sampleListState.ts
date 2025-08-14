@@ -97,7 +97,7 @@ export const sampleList = [
   {
     id: 13,
     title: 'use Redux Toolkit for editor state management',
-    done: false,
+    done: true,
     comments: `There are two state management methods in use, 
     react createContext (TodoContext) and zustand (AppState).
     - Redux Toolkit is a better choice for state management
@@ -119,6 +119,31 @@ export const sampleList = [
     - it is not clear how to read the state form the table cell renderer code`,
   },
   {
+    id: 15,
+    title: 'add a button to save the todo list',
+    done: false,
+    comments: `add a button to save the todo list
+    - the button should save the todo list to localStorage
+    - if the todo list is empty, it should show a message
+    - see https://app.studyraid.com/en/read/11947/381038/async-actions-in-zustand`,
+  },
+  {
+    id: 17,
+    title: 'change project folder structure',
+    done: false,
+    comments: `move electron files to a separate folder
+    - move the renderer directory to project root
+    - move the renderer src files to feature based folders`,
+  },
+  {
+    id: 16,
+    title: 'add a button to load the todo list',
+    done: false,
+    comments: `add a button to load the todo list
+    - the button should load the todo list from localStorage
+    - if the todo list is empty, it should show a message`,
+  },
+  {
     id: 110,
     title: 'add a button to add new todos',
     done: false,
@@ -133,23 +158,6 @@ export const sampleList = [
     comments: `add a button to delete todos
     - the button should delete the selected todo
     - if no todo is selected, it should delete the last todo`,
-  },
-  {
-    id: 113,
-    title: 'add a button to save the todo list',
-    done: false,
-    comments: `add a button to save the todo list
-    - the button should save the todo list to localStorage
-    - if the todo list is empty, it should show a message
-    - see https://app.studyraid.com/en/read/11947/381038/async-actions-in-zustand`,
-  },
-  {
-    id: 114,
-    title: 'add a button to load the todo list',
-    done: false,
-    comments: `add a button to load the todo list
-    - the button should load the todo list from localStorage
-    - if the todo list is empty, it should show a message`,
   },
   {
     id: 115,

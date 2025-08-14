@@ -5,7 +5,7 @@
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
     "src/renderer/test-utils",
-    "src/preload/*.d.ts"
+    "electron/preload/*.d.ts"
   ],
   "compilerOptions": {
     "types": ["node", "@testing-library/jest-dom", "vitest/globals"],
