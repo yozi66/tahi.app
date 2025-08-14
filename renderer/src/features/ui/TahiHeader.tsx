@@ -7,7 +7,7 @@ import {
   selectMobileOpened,
   toggleDesktop,
   toggleMobile,
-} from '@/data/NavbarSlice';
+} from '@/features/ui/NavbarSlice';
 
 export function TahiHeader(): React.JSX.Element {
   const dispatch = useAppDispatch();

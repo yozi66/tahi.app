@@ -1,7 +1,7 @@
 import { Box, Textarea } from '@mantine/core';
-import Todolist from '../Todolist/Todolist';
+import Todolist from './Todolist';
 import { Allotment } from 'allotment';
-import { setSelectedComments } from '../../data/TodolistSlice';
+import { setSelectedComments } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 
 export default function TodolistSplit(): React.JSX.Element {

@@ -1,8 +1,8 @@
-import Versions from '../components/Versions'
-import electronLogo from '../assets/electron.svg'
+import Versions from './Versions';
+import electronLogo from '../../assets/electron.svg';
 
 export function ElectronPage(): React.JSX.Element {
-  const ipcHandle = (): void => window.api.ping()
+  const ipcHandle = (): void => window.api.ping();
 
   return (
     <>
@@ -29,5 +29,5 @@ export function ElectronPage(): React.JSX.Element {
       </div>
       <Versions></Versions>
     </>
-  )
+  );
 }

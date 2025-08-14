@@ -1,6 +1,6 @@
 import { NavLink } from '@mantine/core';
 import { useLocation } from 'react-router-dom';
-import { IconArticle, IconTool } from '../../components/TahiIcons/TahiIcons';
+import { IconArticle, IconTool } from '../../components/TahiIcons';
 
 export function TahiNavbar(): React.JSX.Element {
   const location = useLocation();
@@ -12,6 +12,12 @@ export function TahiNavbar(): React.JSX.Element {
         label="List"
         leftSection={<IconArticle size={16} stroke={1.5} />}
         active={location.pathname === '/'}
+      />
+      <NavLink
+        href="#electron"
+        label="Electron"
+        leftSection={<IconTool size={16} stroke={1.5} />}
+        active={location.pathname === '/electron'}
       />
       <NavLink
         href="#technology"

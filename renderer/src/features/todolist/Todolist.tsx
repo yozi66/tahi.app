@@ -5,12 +5,7 @@ import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
 import { TodoItem } from '../../data/TodoItem';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  setSelectedItemId,
-  setEditingTitle,
-  setSelectedTitle,
-  toggleDone,
-} from '@/data/TodolistSlice';
+import { setSelectedItemId, setEditingTitle, setSelectedTitle, toggleDone } from './TodolistSlice';
 
 export default function Todolist(): React.JSX.Element {
   const dispatch = useAppDispatch();

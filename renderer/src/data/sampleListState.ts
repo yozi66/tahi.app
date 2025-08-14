@@ -120,6 +120,14 @@ export const sampleList = [
   },
   {
     id: 15,
+    title: 'change project folder structure',
+    done: true,
+    comments: `move electron files to a separate folder
+    - move the renderer directory to project root
+    - move the renderer src files to feature based folders`,
+  },
+  {
+    id: 16,
     title: 'add a button to save the todo list',
     done: false,
     comments: `add a button to save the todo list
@@ -129,14 +137,6 @@ export const sampleList = [
   },
   {
     id: 17,
-    title: 'change project folder structure',
-    done: false,
-    comments: `move electron files to a separate folder
-    - move the renderer directory to project root
-    - move the renderer src files to feature based folders`,
-  },
-  {
-    id: 16,
     title: 'add a button to load the todo list',
     done: false,
     comments: `add a button to load the todo list
