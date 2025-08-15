@@ -22,7 +22,7 @@ export default defineConfig({
     },
     plugins: [react()],
     build: {
-      outDir: resolve(__dirname, 'dist/renderer'),
+      outDir: resolve(__dirname, 'out/renderer'),
       rollupOptions: {
         // Explicitly point to your renderer's index.html
         input: resolve(__dirname, 'renderer/index.html'),

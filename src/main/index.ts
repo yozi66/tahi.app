@@ -4,9 +4,11 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
+const devtoolsInProduction = true; // Set to false to disable devtools in production
+
 const installDevTools = async (): Promise<void> => {
   // Install React DevTools
-  if (process.env.NODE_ENV === 'development') {
+  if (devtoolsInProduction || process.env.NODE_ENV === 'development') {
     installExtension(REACT_DEVELOPER_TOOLS)
       .then((name) => console.log(`Added Extension:  ${name.name}`))
       .catch((err) => console.log('An error occurred: ', err));
@@ -31,7 +33,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
-    if (process.env.NODE_ENV === 'development') {
+    if (devtoolsInProduction || process.env.NODE_ENV === 'development') {
       console.log('Development mode: opening DevTools');
       mainWindow.webContents.openDevTools();
     }
