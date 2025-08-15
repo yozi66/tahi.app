@@ -123,6 +123,7 @@ export const sampleList = [
     title: 'change project folder structure',
     done: true,
     comments: `get rid of the src/renderer/src structure
+    - move main and preload to the electron folder
     - move the renderer directory to project root
     - move the renderer src files to feature based folders`,
   },
