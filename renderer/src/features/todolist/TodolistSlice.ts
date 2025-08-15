@@ -1,6 +1,6 @@
 import { createAppSlice } from '@/app/createAppSlice';
-import { TodoItem } from '../../data/TodoItem';
-import { sampleList } from '../../data/sampleListState';
+import { TodoItem } from '@/data/TodoItem';
+import { sampleList } from '@/data/sampleListState';
 
 export type TodolistSlice = {
   selectedItemId?: number;

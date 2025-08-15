@@ -30,18 +30,6 @@
       "@/*": [
         "renderer/src/*"
       ],
-      "@app": [
-        "renderer/src/app"
-      ],
-      "@components/*": [
-        "renderer/src/components/*"
-      ],
-      "@data": [
-        "renderer/src/data"
-      ],
-      "@pages/*": [
-        "renderer/src/pages"
-      ],
       "@test-utils": [
         "renderer/test-utils"
       ]

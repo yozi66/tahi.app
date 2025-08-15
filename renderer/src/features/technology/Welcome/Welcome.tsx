@@ -1,7 +1,7 @@
 import { Anchor, Text, Title } from '@mantine/core';
 import classes from './Welcome.module.css';
 
-export function Welcome() {
+export function Welcome(): React.JSX.Element {
   return (
     <>
       <Title className={classes.title} ta="center" mt={100}>

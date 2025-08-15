@@ -1,5 +1,5 @@
 import Versions from './Versions';
-import electronLogo from '../../assets/electron.svg';
+import electronLogo from '@/assets/electron.svg';
 
 export function ElectronPage(): React.JSX.Element {
   const ipcHandle = (): void => window.api.ping();

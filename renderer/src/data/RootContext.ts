@@ -1,6 +1,6 @@
 import { combineSlices, configureStore } from '@reduxjs/toolkit';
-import { navbarSlice } from '../features/ui/NavbarSlice';
-import { todolistSlice } from '../features/todolist/TodolistSlice';
+import { navbarSlice } from '@/features/ui/NavbarSlice';
+import { todolistSlice } from '@/features/todolist/TodolistSlice';
 
 const rootReducer = combineSlices(navbarSlice, todolistSlice);
 

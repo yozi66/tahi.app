@@ -3,11 +3,11 @@ import 'mantine-datatable/styles.layer.css';
 import 'allotment/dist/style.css';
 
 import { AppShell } from '@mantine/core';
-import { TahiHeader } from './features/ui/TahiHeader';
-import { TahiRoutes } from './features/ui/TahiRouter';
-import { TahiNavbar } from './features/ui/TahiNavbar';
-import { useAppSelector } from './app/hooks';
-import { selectMobileOpened, selectDesktopOpened } from './features/ui/NavbarSlice';
+import { TahiHeader } from '@/features/ui/TahiHeader';
+import { TahiRoutes } from '@/features/ui/TahiRouter';
+import { TahiNavbar } from '@/features/ui/TahiNavbar';
+import { useAppSelector } from '@/app/hooks';
+import { selectMobileOpened, selectDesktopOpened } from '@/features/ui/NavbarSlice';
 
 export default function App(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);

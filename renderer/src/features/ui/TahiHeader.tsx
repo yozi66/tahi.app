@@ -1,6 +1,6 @@
 import React from 'react';
 import { Burger, Group } from '@mantine/core';
-import tahiLogo from '../../assets/tahi_logo_v3_32px.png';
+import tahiLogo from '@/assets/tahi_logo_v3_32px.png';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   selectDesktopOpened,

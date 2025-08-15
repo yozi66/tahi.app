@@ -13,11 +13,7 @@ export default defineConfig({
     root: resolve(__dirname, 'renderer'),
     resolve: {
       alias: {
-        '@': resolve('renderer/src'),
-        '@app': resolve('renderer/src/app'),
-        '@data': resolve('renderer/src/data'),
-        '@components': resolve('renderer/src/components'),
-        '@pages': resolve('renderer/src/pages'),
+        '@': resolve(__dirname, 'renderer/src'),
       },
     },
     plugins: [react()],
