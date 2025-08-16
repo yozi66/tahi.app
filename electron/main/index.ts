@@ -1,8 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
+import { app, shell, BrowserWindow } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import { setupIpcHandlers } from './ipc';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
@@ -72,13 +73,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'));
-
-  // Handle versions request from renderer process
-  ipcMain.handle('get-versions', () => {
-    return process.versions;
-  });
+  // Setup IPC handlers
+  setupIpcHandlers();
 
   // Await the installation of the dev tools first
   await installDevTools();

@@ -8,6 +8,8 @@ import {
   toggleDesktop,
   toggleMobile,
 } from '@/features/ui/NavbarSlice';
+import { IconDeviceFloppy } from '@/components/TahiIcons';
+import { ActionIcon } from '@mantine/core';
 
 export function TahiHeader(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -30,6 +32,23 @@ export function TahiHeader(): React.JSX.Element {
         size="sm"
       />
       <img src={tahiLogo} alt="TAHI" />
+      <ActionIcon
+        variant="subtle"
+        color="blue"
+        size="sm"
+        aria-label="Save"
+        onClick={() =>
+          window.api.save().then((response) => {
+            if (response.success) {
+              console.log('Save successful');
+            } else {
+              console.error('Save failed');
+            }
+          })
+        }
+      >
+        <IconDeviceFloppy size={20} />
+      </ActionIcon>
     </Group>
   );
 }
