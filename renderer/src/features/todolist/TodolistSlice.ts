@@ -1,6 +1,5 @@
 import { createAppSlice } from '@/app/createAppSlice';
-import { TodoItem } from '@/data/TodoItem';
-import { sampleList } from '@/data/sampleListState';
+import { TodoItem } from '@common/types/TodoItem';
 
 export type TodolistSlice = {
   selectedItemId?: number;
@@ -17,7 +16,7 @@ const initialState: TodolistSlice = {
   selectedItemId: 1,
   selectedItemIndex: 0,
   editingTitle: false,
-  todoItems: sampleList,
+  todoItems: [],
 };
 
 export const todolistSlice = createAppSlice({

@@ -1,7 +1,7 @@
 import App from '@/App';
 import { MantineProvider } from '@mantine/core';
 import { Provider } from 'react-redux';
-import { store } from '@/data/RootContext';
+import { store } from '@/app/RootContext';
 import { theme } from '@/theme';
 
 export function TahiProviders(): React.JSX.Element {

@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { get_list } from '../../renderer/src/client/items';
 
 console.log('Preload script is running!');
 console.log('Reload (ctrl+r) may be needed to load React DevTools');
@@ -8,6 +9,7 @@ const api = {
   getVersions: () => ipcRenderer.invoke('get-versions'),
   ping: () => ipcRenderer.send('ping'),
   save: () => ipcRenderer.invoke('save'),
+  get_list: () => ipcRenderer.invoke('get_list'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

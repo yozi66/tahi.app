@@ -3,7 +3,7 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { setupIpcHandlers } from './ipc';
+import { setupIpcHandlers } from './ipc/ipcHandlers';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 

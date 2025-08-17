@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import { sampleList } from '@main/data/sampleList.json';
 
 export function setupIpcHandlers(): void {
   // IPC test
@@ -13,5 +14,9 @@ export function setupIpcHandlers(): void {
     console.log('Save action triggered');
     // Implement save logic here
     return { success: true };
+  });
+
+  ipcMain.handle('get_list', async () => {
+    return sampleList;
   });
 }

@@ -129,15 +129,24 @@ export const sampleList = [
   },
   {
     id: 16,
+    title: 'read the todo list from the main process',
+    done: false,
+    comments: `the todo lists are stored in the main process
+    - at startup, the renderer asks the main process for the list of todo lists
+    - the renderer opens the first todo list
+    - the renderer queries the main process for the todo list's content`,
+  },
+  {
+    id: 27,
     title: 'add a button to save the todo list',
     done: false,
     comments: `add a button to save the todo list
-    - the button should save the todo list to localStorage
-    - if the todo list is empty, it should show a message
-    - see https://app.studyraid.com/en/read/11947/381038/async-actions-in-zustand`,
+    - the button should save the todo list to a local file
+    - the file should be named todos.json
+    - after saving, it should show a message`,
   },
   {
-    id: 17,
+    id: 28,
     title: 'add a button to load the todo list',
     done: false,
     comments: `add a button to load the todo list

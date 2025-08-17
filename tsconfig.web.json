@@ -6,7 +6,7 @@
     "renderer/src/**/*.tsx",
     "renderer/test-utils",
     "electron/preload/*.d.ts",
-    "common/**/*.ts"
+    "common/**/*.ts",
   ],
   "compilerOptions": {
     "types": ["node", "@testing-library/jest-dom", "vitest/globals"],
@@ -33,7 +33,10 @@
       ],
       "@test-utils": [
         "renderer/test-utils"
-      ]
+      ],
+      "@common/*": [
+        "common/*"
+      ],
     }
   }
 }
