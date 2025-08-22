@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { sampleList } from '@main/data/sampleList.json';
+import { sampleList } from '@main/data/sampleListState';
 
 export function setupIpcHandlers(): void {
   // IPC test

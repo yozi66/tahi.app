@@ -1,4 +1,4 @@
-import { createAppSlice } from '@/app/createAppSlice';
+import { createAppSlice } from '@renderer/app/createAppSlice';
 import { TodoItem } from '@common/types/TodoItem';
 
 export type TodolistSlice = {

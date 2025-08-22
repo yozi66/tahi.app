@@ -3,8 +3,8 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { TodoItem } from '@/data/TodoItem';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { TodoItem } from '@common/types/TodoItem';
+import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import { setSelectedItemId, setEditingTitle, setSelectedTitle, toggleDone } from './TodolistSlice';
 
 export default function Todolist(): React.JSX.Element {

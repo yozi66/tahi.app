@@ -1,9 +1,9 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { TechnologyPage } from '@/features/technology/Technology.page';
-import { TodolistPage } from '@/features/todolist/Todolist.page';
+import { TechnologyPage } from '@renderer/features/technology/Technology.page';
+import { TodolistPage } from '@renderer/features/todolist/Todolist.page';
 import { Error404Page } from './Error.404.page';
-import { ElectronPage } from '@/features/technology/Electron.page';
-import { TahiProviders } from '@/app/TahiProviders';
+import { ElectronPage } from '@renderer/features/technology/Electron.page';
+import { TahiProviders } from '@renderer/app/TahiProviders';
 
 export function TahiRouter(): React.JSX.Element {
   return (

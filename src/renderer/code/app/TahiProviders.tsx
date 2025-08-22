@@ -1,8 +1,8 @@
-import App from '@/App';
+import App from '@renderer/App';
 import { MantineProvider } from '@mantine/core';
 import { Provider } from 'react-redux';
-import { store } from '@/app/RootContext';
-import { theme } from '@/theme';
+import { store } from '@renderer/app/RootContext';
+import { theme } from '@renderer/theme';
 
 export function TahiProviders(): React.JSX.Element {
   return (

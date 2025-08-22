@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { get_list } from '../../renderer/src/client/items';
+import { get_list } from '../renderer/src/client/items';
 
 console.log('Preload script is running!');
 console.log('Reload (ctrl+r) may be needed to load React DevTools');

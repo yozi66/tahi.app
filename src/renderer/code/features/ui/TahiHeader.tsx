@@ -1,14 +1,14 @@
 import React from 'react';
 import { Burger, Group } from '@mantine/core';
-import tahiLogo from '@/assets/tahi_logo_v3_32px.png';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import tahiLogo from '@renderer/assets/tahi_logo_v3_32px.png';
+import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import {
   selectDesktopOpened,
   selectMobileOpened,
   toggleDesktop,
   toggleMobile,
-} from '@/features/ui/NavbarSlice';
-import { IconDeviceFloppy } from '@/components/TahiIcons';
+} from '@renderer/features/ui/NavbarSlice';
+import { IconDeviceFloppy } from '@renderer/components/TahiIcons';
 import { ActionIcon } from '@mantine/core';
 
 export function TahiHeader(): React.JSX.Element {
