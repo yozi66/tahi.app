@@ -1,4 +1,13 @@
 {
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "workbench.colorTheme": "Visual Studio Dark",
+  // Maximum number of open editors
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 10,
+
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
@@ -19,8 +28,4 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
-  "workbench.colorTheme": "Visual Studio Dark",
-  // Maximum number of open editors
-  "workbench.editor.limit.enabled": true,
-  "workbench.editor.limit.value": 10,
 }

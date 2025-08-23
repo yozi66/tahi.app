@@ -1,8 +1,9 @@
 import { combineSlices, configureStore } from '@reduxjs/toolkit';
 import { navbarSlice } from '@renderer/features/ui/NavbarSlice';
 import { todolistSlice } from '@renderer/features/todolist/TodolistSlice';
+import { appSlice } from '@renderer/features/ui/AppSlice';
 
-const rootReducer = combineSlices(navbarSlice, todolistSlice);
+const rootReducer = combineSlices(appSlice, navbarSlice, todolistSlice);
 
 export type RootState = ReturnType<typeof rootReducer>;
 
