@@ -10,16 +10,23 @@ import { useAppSelector } from '@renderer/app/hooks';
 import { selectMobileOpened, selectDesktopOpened } from '@renderer/features/ui/NavbarSlice';
 import { TodoItem } from '@common/types/TodoItem';
 import { useAppDispatch } from '@renderer/app/hooks';
+import { areApiCallbacksAdded, setApiCallbacksAdded } from './features/ui/AppSlice';
 
 export default function App(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
+  const apiCallbacksAdded = useAppSelector(areApiCallbacksAdded);
   const dispatch = useAppDispatch();
-  console.log('Adding handlers in renderer');
-  window.api.onPushList((list: TodoItem[]) => {
-    console.log('Received list from main process');
-    dispatch({ type: 'todolist/setTodoItems', payload: list });
-  });
+
+  if (!apiCallbacksAdded) {
+    // dev loads twice due to React.StrictMode
+    console.log('Adding handlers in renderer');
+    window.api.onPushList((list: TodoItem[]) => {
+      console.log('Received list from main process');
+      dispatch({ type: 'todolist/setTodoItems', payload: list });
+    });
+    dispatch(setApiCallbacksAdded(true));
+  }
 
   return (
     <AppShell
