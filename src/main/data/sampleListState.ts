@@ -123,14 +123,20 @@ export const sampleList = [
     title: 'change project folder structure',
     done: true,
     comments: `get rid of the src/renderer/src structure
-    - move main and preload to the electron folder
-    - move the renderer directory to project root
-    - move the renderer src files to feature based folders`,
+    - remove renderer src to code`,
   },
   {
     id: 16,
+    title: 'push the initial todo list from the main process to the renderer',
+    done: true,
+    comments: `the sample todo list is stored in the main process
+    - at startup, the main process sends the sample list to the renderer
+    - the renderer (callback) receives the list and updates the redux context`,
+  },
+  {
+    id: 17,
     title: 'read the todo list from the main process',
-    done: false,
+    done: true,
     comments: `the todo lists are stored in the main process
     - at startup, the renderer asks the main process for the list of todo lists
     - the renderer opens the first todo list

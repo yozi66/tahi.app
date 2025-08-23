@@ -23,12 +23,12 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: {
+    setEditingTitle: (state, action) => {
+      state.editingTitle = action.payload;
+    },
     setSelectedItemId: (state, action) => {
       state.selectedItemId = action.payload;
       state.selectedItemIndex = computeItemIndex(state.todoItems, action.payload);
-    },
-    setEditingTitle: (state, action) => {
-      state.editingTitle = action.payload;
     },
     setSelectedTitle: (state, action) => {
       const selectedItemIndex = state.selectedItemIndex;
@@ -47,6 +47,16 @@ export const todolistSlice = createAppSlice({
       }
       selectedItem.comments = action.payload;
       state.editingTitle = false; // Exit title edit mode when editing comments
+    },
+    setTodoItems: (state, action) => {
+      state.todoItems = action.payload;
+      if (action.payload.length > 0) {
+        state.selectedItemId = action.payload[0].id;
+        state.selectedItemIndex = 0;
+      } else {
+        state.selectedItemId = undefined;
+        state.selectedItemIndex = undefined;
+      }
     },
     toggleDone: (state, action) => {
       if (state.selectedItemId !== action.payload) {

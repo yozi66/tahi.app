@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { setupIpcHandlers } from './ipc/ipcHandlers';
+import { sampleList } from './data/sampleListState';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
@@ -38,6 +39,10 @@ function createWindow(): void {
       console.log('Development mode: opening DevTools');
       mainWindow.webContents.openDevTools();
     }
+  });
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('push-list', sampleList);
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

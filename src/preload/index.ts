@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { get_list } from '../renderer/src/client/items';
+import { TodoItem } from '@common/types/TodoItem';
 
 console.log('Preload script is running!');
 console.log('Reload (ctrl+r) may be needed to load React DevTools');
@@ -10,6 +10,11 @@ const api = {
   ping: () => ipcRenderer.send('ping'),
   save: () => ipcRenderer.invoke('save'),
   get_list: () => ipcRenderer.invoke('get_list'),
+  onPushList: (callback: (list: TodoItem[]) => void) => {
+    ipcRenderer.once('push-list', (_event, list: TodoItem[]) => {
+      callback(list);
+    });
+  },
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
