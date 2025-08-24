@@ -2,6 +2,17 @@
 
 An Electron application with React and TypeScript
 
+## Known issues
+
+### Electron error message on npm run dev
+
+```
+[2272:0824/123505.427:ERROR:CONSOLE:2] "Electron sandboxed_renderer.bundle.js script failed to run", source: node:electron/js2c/sandbox_bundle (2)
+[2272:0824/123505.427:ERROR:CONSOLE:2] "TypeError: object null is not iterable (cannot read property Symbol(Symbol.iterator))", source: node:electron/js2c/sandbox_bundle (2)
+```
+
+According to github electron issue [32133](https://github.com/electron/electron/issues/32133) this error message is stale.
+
 ## Recommended IDE Setup
 
 - [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
