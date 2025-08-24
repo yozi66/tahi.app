@@ -1,11 +1,9 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/data/sampleListState';
-import { writeFileSync } from 'fs';
-import path from 'path';
+import { MainState } from '@main/data/mainState';
+import { saveTodoList } from './file';
 
-const filePath = path.join(__dirname, 'sampleList.json');
-
-export function setupIpcHandlers(): void {
+export function setupIpcHandlers(mainState: MainState): void {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'));
 
@@ -16,14 +14,7 @@ export function setupIpcHandlers(): void {
 
   ipcMain.handle('save', async (_event, payload) => {
     console.log(`Save action triggered with ${payload.length} items`);
-    try {
-      writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf-8');
-      console.log(`Data successfully saved to ${filePath}`);
-    } catch (error) {
-      console.error('Error saving data:', error);
-      return { success: false };
-    }
-    return { success: true };
+    return saveTodoList(payload, mainState);
   });
 
   ipcMain.handle('get_list', async () => {
