@@ -1,12 +1,9 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/code/env.d.ts",
     "src/renderer/code/**/*",
-    "src/renderer/code/**/*.tsx",
-    "src/renderer/test-utils",
     "src/preload/*.d.ts",
-    "src/common/**/*.ts",
+    "src/common/**/*.ts", "src/renderer/test/Welcome",
   ],
   "compilerOptions": {
     "types": ["node", "@testing-library/jest-dom", "vitest/globals"],
@@ -30,9 +27,6 @@
     "paths": {
       "@renderer/*": [
         "src/renderer/code/*"
-      ],
-      "@test-utils/*": [
-        "src/renderer/test-utils/*"
       ],
       "@common/*": [
         "src/common/*"
