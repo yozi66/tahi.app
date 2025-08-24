@@ -8,7 +8,7 @@ console.log('Reload (ctrl+r) may be needed to load React DevTools');
 const api = {
   getVersions: () => ipcRenderer.invoke('get-versions'),
   ping: () => ipcRenderer.send('ping'),
-  save: () => ipcRenderer.invoke('save'),
+  save: (payload: TodoItem[]) => ipcRenderer.invoke('save', payload),
   get_list: () => ipcRenderer.invoke('get_list'),
   onPushList: (callback: (list: TodoItem[]) => void) => {
     ipcRenderer.once('push-list', (_event, list: TodoItem[]) => {

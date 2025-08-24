@@ -10,8 +10,8 @@ export function setupIpcHandlers(): void {
     return process.versions;
   });
 
-  ipcMain.handle('save', () => {
-    console.log('Save action triggered');
+  ipcMain.handle('save', async (_event, payload) => {
+    console.log(`Save action triggered with ${payload.length} items`);
     // Implement save logic here
     return { success: true };
   });

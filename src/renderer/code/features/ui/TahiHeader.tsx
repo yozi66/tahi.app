@@ -8,6 +8,7 @@ import {
   toggleDesktop,
   toggleMobile,
 } from '@renderer/features/ui/NavbarSlice';
+import { getItems } from '@renderer/features/todolist/TodolistSlice';
 import { IconDeviceFloppy } from '@renderer/components/TahiIcons';
 import { ActionIcon } from '@mantine/core';
 
@@ -15,6 +16,7 @@ export function TahiHeader(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
+  const items = useAppSelector(getItems);
 
   return (
     <Group h="100%" px="md">
@@ -38,7 +40,7 @@ export function TahiHeader(): React.JSX.Element {
         size="sm"
         aria-label="Save"
         onClick={() =>
-          window.api.save().then((response) => {
+          window.api.save(items).then((response) => {
             if (response.success) {
               console.log('Save successful');
             } else {
