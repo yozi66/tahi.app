@@ -17,7 +17,7 @@ export const sampleList = [
     id: 3,
     title: 'make the checkbox clickable',
     done: true,
-    comments: `figure out how to make the checkbox clickable 
+    comments: `figure out how to make the checkbox clickable
     and toggle the done state`,
   },
   {
@@ -98,7 +98,7 @@ export const sampleList = [
     id: 13,
     title: 'use Redux Toolkit for editor state management',
     done: true,
-    comments: `There are two state management methods in use, 
+    comments: `There are two state management methods in use,
     react createContext (TodoContext) and zustand (AppState).
     - Redux Toolkit is a better choice for state management
     - with slicing for different parts of the state
@@ -143,13 +143,21 @@ export const sampleList = [
     - the renderer queries the main process for the todo list's content`,
   },
   {
-    id: 27,
+    id: 18,
     title: 'add a button to save the todo list',
-    done: false,
+    done: true,
     comments: `add a button to save the todo list
     - the button should save the todo list to a local file
-    - the file should be named todos.json
-    - after saving, it should show a message`,
+    - the file should be named sampleList.json`,
+  },
+  {
+    id: 19,
+    title: 'show the save-as dialog on save',
+    done: false,
+    comments: `show the save-as dialog on save
+    - the dialog should allow to select the file name and location
+    - the default file name should be sampleList.json
+    - the default location should be the user's documents folder`,
   },
   {
     id: 28,
