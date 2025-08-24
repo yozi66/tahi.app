@@ -3,7 +3,7 @@ import { TodoItem } from '@common/types/TodoItem';
 import { MainState } from '@main/data/mainState';
 import { writeFileSync } from 'fs';
 
-export const saveTodoList = async (
+const saveTodoListAs = async (
   items: TodoItem[],
   mainState: MainState,
 ): Promise<{ success: boolean }> => {
@@ -23,6 +23,7 @@ export const saveTodoList = async (
       try {
         writeFileSync(result.filePath, JSON.stringify(items, null, 2), 'utf-8');
         console.log(`Data successfully saved to ${result.filePath}`);
+        mainState.filepath = result.filePath;
         return { success: true };
       } catch (error) {
         console.error('Error saving data:', error);
@@ -30,4 +31,22 @@ export const saveTodoList = async (
     }
     return { success: false };
   });
+};
+
+export const saveTodoList = async (
+  items: TodoItem[],
+  mainState: MainState,
+): Promise<{ success: boolean }> => {
+  if (mainState.filepath) {
+    try {
+      writeFileSync(mainState.filepath, JSON.stringify(items, null, 2), 'utf-8');
+      console.log(`Data successfully saved to ${mainState.filepath}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Error saving data:', error);
+      return { success: false };
+    }
+  } else {
+    return saveTodoListAs(items, mainState);
+  }
 };

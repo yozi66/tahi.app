@@ -3,5 +3,5 @@ import { BrowserWindow } from 'electron';
 
 export type MainState = {
   mainWindow: BrowserWindow;
-  filename?: string;
+  filepath?: string;
 };

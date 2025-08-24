@@ -153,7 +153,7 @@ export const sampleList = [
   {
     id: 19,
     title: 'open the save as dialog to save the todo list',
-    done: false,
+    done: true,
     comments: `when the user first presses the save button
     - show the save as dialog
     - and remember the file name

@@ -13,7 +13,6 @@ export function setupIpcHandlers(mainState: MainState): void {
   });
 
   ipcMain.handle('save', async (_event, payload) => {
-    console.log(`Save action triggered with ${payload.length} items`);
     return saveTodoList(payload, mainState);
   });
 
