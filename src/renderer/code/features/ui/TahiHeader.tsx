@@ -8,7 +8,7 @@ import {
   toggleDesktop,
   toggleMobile,
 } from '@renderer/features/ui/NavbarSlice';
-import { getItems } from '@renderer/features/todolist/TodolistSlice';
+import { getItems, save } from '@renderer/features/todolist/TodolistSlice';
 import { IconDeviceFloppy } from '@renderer/components/TahiIcons';
 import { ActionIcon } from '@mantine/core';
 
@@ -39,15 +39,7 @@ export function TahiHeader(): React.JSX.Element {
         color="blue"
         size="sm"
         aria-label="Save"
-        onClick={() =>
-          window.api.save(items).then((response) => {
-            if (response.success) {
-              console.log('Save successful');
-            } else {
-              console.error('Save failed');
-            }
-          })
-        }
+        onClick={() => dispatch(save(items))}
       >
         <IconDeviceFloppy size={20} />
       </ActionIcon>

@@ -1,4 +1,4 @@
-import { combineSlices, configureStore } from '@reduxjs/toolkit';
+import { Action, combineSlices, configureStore, ThunkDispatch } from '@reduxjs/toolkit';
 import { navbarSlice } from '@renderer/features/ui/NavbarSlice';
 import { todolistSlice } from '@renderer/features/todolist/TodolistSlice';
 import { appSlice } from '@renderer/features/ui/AppSlice';
@@ -21,4 +21,4 @@ export const store = makeStore();
 
 export type AppStore = typeof store;
 
-export type AppDispatch = AppStore['dispatch'];
+export type AppDispatch = ThunkDispatch<RootState, void, Action>;
