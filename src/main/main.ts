@@ -5,13 +5,14 @@ import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { setupIpcHandlers } from '@main/ipc/ipcHandlers';
 import { sampleList } from '@main/data/sampleListState';
-import { MainState } from '@main/data/mainState';
+import { MainState, readMainSettings, saveMainSettings } from '@main/data/mainState';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
 const installDevTools = async (): Promise<void> => {
   // Install React DevTools
   if (devtoolsInProduction || process.env.NODE_ENV === 'development') {
+    console.log('installing React Developer Tools');
     installExtension(REACT_DEVELOPER_TOOLS)
       .then((name) => console.log(`Added Extension:  ${name.name}`))
       .catch((err) => console.log('An error occurred: ', err));
@@ -34,7 +35,12 @@ function createWindow(): void {
     },
   });
 
-  const mainState: MainState = { mainWindow: mainWindow };
+  const mainState: MainState = { mainWindow: mainWindow, mainSettings: readMainSettings() };
+
+  // Save the settings before quit
+  app.on('before-quit', () => {
+    saveMainSettings(mainState.mainSettings);
+  });
 
   // Setup IPC handlers
   setupIpcHandlers(mainState);
@@ -105,6 +111,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

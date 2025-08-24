@@ -160,6 +160,16 @@ export const sampleList = [
     - and save to the same file later on`,
   },
   {
+    id: 20,
+    title: 'save the filepath to the persistent settings',
+    done: false,
+    comments: `when the user saves the todolist
+    - (done) save the filepath to a settings file
+    - (done) and load the settings on the next startup
+    - and validate the input
+    - and load todolist from the file on the next startup`,
+  },
+  {
     id: 27,
     title: 'show the save-as dialog on save',
     done: false,
