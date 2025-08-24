@@ -1,5 +1,9 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/data/sampleListState';
+import { writeFileSync } from 'fs';
+import path from 'path';
+
+const filePath = path.join(__dirname, 'sampleList.json');
 
 export function setupIpcHandlers(): void {
   // IPC test
@@ -12,7 +16,13 @@ export function setupIpcHandlers(): void {
 
   ipcMain.handle('save', async (_event, payload) => {
     console.log(`Save action triggered with ${payload.length} items`);
-    // Implement save logic here
+    try {
+      writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf-8');
+      console.log(`Data successfully saved to ${filePath}`);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      return { success: false };
+    }
     return { success: true };
   });
 
