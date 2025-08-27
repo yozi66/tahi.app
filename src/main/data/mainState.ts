@@ -3,13 +3,14 @@ import { app, BrowserWindow } from 'electron';
 import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
-export type FileInfo = {
-  shortname: string;
+export type MainSettings = {
   filepath?: string;
 };
 
-export type MainSettings = {
-  todoFiles: Record<string, FileInfo>;
+const isMainSettings = (obj: unknown): boolean => {
+  return (
+    typeof obj === 'object' && obj !== null && typeof (obj as MainSettings).filepath === 'string'
+  );
 };
 
 export type MainState = {
@@ -20,18 +21,16 @@ export type MainState = {
 const settingsPath = path.join(app.getPath('userData'), 'tahi-settings.json');
 
 export const readMainSettings = (): MainSettings => {
-  const defaultFileInfo = { '1': { shortname: 'sampleList' } };
   try {
     const raw = readFileSync(settingsPath, 'utf-8');
     const mainSettings = JSON.parse(raw);
-    if (!mainSettings.todoFiles['1']) {
-      mainSettings.todoFiles['1'] = defaultFileInfo['1'];
+    if (isMainSettings(mainSettings)) {
+      return mainSettings;
     }
-    return mainSettings;
   } catch (error) {
     console.log(error);
-    return { todoFiles: defaultFileInfo };
   }
+  return {};
 };
 
 export const saveMainSettings = (mainSettings: MainSettings): void => {
