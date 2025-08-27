@@ -23,8 +23,7 @@ const saveTodoListAs = async (
       try {
         writeFileSync(result.filePath, JSON.stringify(items, null, 2), 'utf-8');
         console.log(`Data successfully saved to ${result.filePath}`);
-        const firstFile = mainState.mainSettings.todoFiles['1'];
-        firstFile.filepath = result.filePath;
+        mainState.mainSettings.filepath = result.filePath;
         return { success: true };
       } catch (error) {
         console.error('Error saving data:', error);
@@ -39,11 +38,11 @@ export const saveTodoList = async (
   mainState: MainState,
 ): Promise<{ success: boolean }> => {
   console.log('saveTodoList(): mainState = ', mainState);
-  const firstFile = mainState.mainSettings.todoFiles['1'];
-  if (firstFile.filepath) {
+  const filepath = mainState.mainSettings.filepath;
+  if (filepath) {
     try {
-      writeFileSync(firstFile.filepath, JSON.stringify(items, null, 2), 'utf-8');
-      console.log(`Data successfully saved to ${firstFile.filepath}`);
+      writeFileSync(filepath, JSON.stringify(items, null, 2), 'utf-8');
+      console.log(`Data successfully saved to ${filepath}`);
       return { success: true };
     } catch (error) {
       console.error('Error saving data:', error);
