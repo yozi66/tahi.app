@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState } from '@main/state/mainState';
-import { saveTodoList } from '@main/repository/file';
+import { MainState } from '@main/state/MainState';
+import { saveTodoList } from '@main/repository/TodoListRepository';
 
 export function setupIpcHandlers(mainState: MainState): void {
   // IPC test

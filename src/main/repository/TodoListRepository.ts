@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
-import { TodoItem } from '@common/types/TodoItem';
-import { MainState } from '@main/state/mainState';
+import { TodoItem, isTodoItem } from '@common/types/TodoItem';
+import { MainState } from '@main/state/MainState';
 import { readFileSync, writeFileSync } from 'fs';
 
 const saveTodoListAs = async (
@@ -53,22 +53,7 @@ export const saveTodoList = async (
 };
 
 const isTodoItemArray = (obj: unknown): obj is TodoItem[] => {
-  return (
-    Array.isArray(obj) &&
-    obj.every(
-      (el) =>
-        typeof el === 'object' &&
-        el !== null &&
-        'id' in el &&
-        'title' in el &&
-        'done' in el &&
-        'comments' in el &&
-        typeof (el as TodoItem).id === 'number' &&
-        typeof (el as TodoItem).title === 'string' &&
-        typeof (el as TodoItem).done === 'boolean' &&
-        typeof (el as TodoItem).comments === 'string',
-    )
-  );
+  return Array.isArray(obj) && obj.every((el) => isTodoItem(el));
 };
 
 export const loadTodoListFromPath = async (

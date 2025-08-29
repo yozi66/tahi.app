@@ -5,9 +5,10 @@ import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { setupIpcHandlers } from '@main/controller/ipcHandlers';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState, readMainSettings, saveMainSettings } from '@main/state/mainState';
-import { Todolist } from '@main/state/Todolist';
-import { loadTodoListFromPath } from './repository/file';
+import { MainState } from '@main/state/MainState';
+import { readMainSettings, saveMainSettings } from '@main/repository/MainSettingsRepository';
+import { TodoList } from '@main/state/TodoItemList';
+import { loadTodoListFromPath } from './repository/TodoListRepository';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
@@ -39,7 +40,7 @@ function createMainWindow(): MainState {
 
   const mainState: MainState = {
     mainWindow: mainWindow,
-    mainList: new Todolist(sampleList),
+    mainList: new TodoList(sampleList),
     mainSettings: readMainSettings(),
   };
 
