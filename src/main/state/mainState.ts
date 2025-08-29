@@ -1,6 +1,7 @@
 // runtime state of the app
 import { app, BrowserWindow } from 'electron';
 import { readFileSync, writeFileSync } from 'fs';
+import { Todolist } from '@main/state/Todolist';
 import path from 'path';
 
 export type MainSettings = {
@@ -15,6 +16,7 @@ const isMainSettings = (obj: unknown): boolean => {
 
 export type MainState = {
   mainWindow: BrowserWindow;
+  mainList: Todolist;
   mainSettings: MainSettings;
 };
 

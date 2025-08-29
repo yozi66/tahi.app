@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import { TodoItem } from '@common/types/TodoItem';
-import { MainState } from '@main/data/mainState';
+import { MainState } from '@main/state/mainState';
 import { writeFileSync } from 'fs';
 
 const saveTodoListAs = async (

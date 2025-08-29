@@ -3,9 +3,10 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { setupIpcHandlers } from '@main/ipc/ipcHandlers';
-import { sampleList } from '@main/data/sampleListState';
-import { MainState, readMainSettings, saveMainSettings } from '@main/data/mainState';
+import { setupIpcHandlers } from '@main/controller/ipcHandlers';
+import { sampleList } from '@main/state/sampleListState';
+import { MainState, readMainSettings, saveMainSettings } from '@main/state/mainState';
+import { Todolist } from '@main/state/Todolist';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
@@ -35,7 +36,11 @@ function createWindow(): void {
     },
   });
 
-  const mainState: MainState = { mainWindow: mainWindow, mainSettings: readMainSettings() };
+  const mainState: MainState = {
+    mainWindow: mainWindow,
+    mainList: new Todolist(sampleList),
+    mainSettings: readMainSettings(),
+  };
 
   // Save the settings before quit
   app.on('before-quit', () => {
