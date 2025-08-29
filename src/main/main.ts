@@ -7,6 +7,7 @@ import { setupIpcHandlers } from '@main/controller/ipcHandlers';
 import { sampleList } from '@main/state/sampleListState';
 import { MainState, readMainSettings, saveMainSettings } from '@main/state/mainState';
 import { Todolist } from '@main/state/Todolist';
+import { loadTodoListFromPath } from './repository/file';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production
 
@@ -20,7 +21,7 @@ const installDevTools = async (): Promise<void> => {
   }
 };
 
-function createWindow(): void {
+function createMainWindow(): MainState {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1000,
@@ -42,14 +43,6 @@ function createWindow(): void {
     mainSettings: readMainSettings(),
   };
 
-  // Save the settings before quit
-  app.on('before-quit', () => {
-    saveMainSettings(mainState.mainSettings);
-  });
-
-  // Setup IPC handlers
-  setupIpcHandlers(mainState);
-
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
     if (devtoolsInProduction || process.env.NODE_ENV === 'development') {
@@ -59,7 +52,7 @@ function createWindow(): void {
   });
 
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('push-list', sampleList);
+    mainWindow.webContents.send('push-list', mainState.mainList.items);
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -79,6 +72,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
+
+  return mainState;
 }
 
 // This method will be called when Electron has finished
@@ -86,7 +81,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron');
+  electronApp.setAppUserModelId('hu.frigo.tahi.app');
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -99,12 +94,28 @@ app.whenReady().then(async () => {
   await installDevTools();
 
   // Then, create the window
-  createWindow();
+  const mainState = createMainWindow();
+
+  // Setup IPC handlers
+  setupIpcHandlers(mainState);
+
+  if (mainState.mainSettings.filepath) {
+    loadTodoListFromPath(mainState.mainSettings.filepath).then(({ success, items }): void => {
+      if (success && items) {
+        mainState.mainList.items = items;
+      }
+    });
+  }
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+  });
+
+  // Save the settings before quit
+  app.on('before-quit', () => {
+    saveMainSettings(mainState.mainSettings);
   });
 });
 

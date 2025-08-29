@@ -8,6 +8,7 @@ interface TahiApi {
   save: (list: TodoItem[]) => Promise<{ success: boolean }>;
   get_list: () => Promise<TodoItem[]>;
   onPushList: (callback: (list: TodoItem[]) => void) => void;
+  // planned: onPushChanges: (callback: (changes: TodoChange[]) => void) => void;
   // Add other custom API methods here
   // For example:
   // saveSettings: (settings: any) => void;

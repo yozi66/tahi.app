@@ -1,7 +1,7 @@
 import { dialog } from 'electron';
 import { TodoItem } from '@common/types/TodoItem';
 import { MainState } from '@main/state/mainState';
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 const saveTodoListAs = async (
   items: TodoItem[],
@@ -37,7 +37,6 @@ export const saveTodoList = async (
   items: TodoItem[],
   mainState: MainState,
 ): Promise<{ success: boolean }> => {
-  console.log('saveTodoList(): mainState = ', mainState);
   const filepath = mainState.mainSettings.filepath;
   if (filepath) {
     try {
@@ -51,4 +50,39 @@ export const saveTodoList = async (
   } else {
     return saveTodoListAs(items, mainState);
   }
+};
+
+const isTodoItemArray = (obj: unknown): obj is TodoItem[] => {
+  return (
+    Array.isArray(obj) &&
+    obj.every(
+      (el) =>
+        typeof el === 'object' &&
+        el !== null &&
+        'id' in el &&
+        'title' in el &&
+        'done' in el &&
+        'comments' in el &&
+        typeof (el as TodoItem).id === 'number' &&
+        typeof (el as TodoItem).title === 'string' &&
+        typeof (el as TodoItem).done === 'boolean' &&
+        typeof (el as TodoItem).comments === 'string',
+    )
+  );
+};
+
+export const loadTodoListFromPath = async (
+  filepath: string,
+): Promise<{ success: boolean; items?: TodoItem[] }> => {
+  try {
+    const raw = readFileSync(filepath, 'utf-8');
+    const items = JSON.parse(raw);
+    if (isTodoItemArray(items)) {
+      console.log(`loaded ${items.length} items from ${filepath}`);
+      return { success: true, items: items };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return { success: false };
 };
