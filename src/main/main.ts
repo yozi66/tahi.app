@@ -5,9 +5,9 @@ import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { setupIpcHandlers } from '@main/controller/ipcHandlers';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState } from '@main/state/MainState';
+import { MainState } from '@main/state/MainStateType';
 import { readMainSettings, saveMainSettings } from '@main/repository/MainSettingsRepository';
-import { TodoList } from '@main/state/TodoItemList';
+import { TodoList } from '@main/state/TodoList';
 import { loadTodoListFromPath } from './repository/TodoListRepository';
 
 const devtoolsInProduction = true; // Set to false to disable devtools in production

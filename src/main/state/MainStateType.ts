@@ -1,6 +1,6 @@
 // runtime state of the app
 import { BrowserWindow } from 'electron';
-import { TodoList } from '@main/state/TodoItemList';
+import { TodoList } from '@main/state/TodoList';
 
 export type MainSettings = {
   filepath?: string;

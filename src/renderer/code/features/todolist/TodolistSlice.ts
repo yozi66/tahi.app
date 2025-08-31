@@ -7,7 +7,7 @@ export type TodolistSlice = {
   editingTitle?: boolean;
   todoItems: TodoItem[];
   saved?: boolean;
-  status?: 'idle' | 'saving' | 'failed';
+  status?: 'idle' | 'loading' | 'saving' | 'failed';
 };
 
 const computeItemIndex = (todoItems: TodoItem[], id: number): number => {
@@ -21,6 +21,19 @@ const initialState: TodolistSlice = {
   todoItems: [],
   saved: true,
   status: 'idle',
+};
+
+const loadItems = (state: TodolistSlice, payload: TodoItem[]): void => {
+  state.todoItems = payload;
+  if (payload.length > 0) {
+    state.selectedItemId = payload[0].id;
+    state.selectedItemIndex = 0;
+  } else {
+    state.selectedItemId = undefined;
+    state.selectedItemIndex = undefined;
+  }
+  state.saved = true;
+  console.log(`Loaded ${payload.length} items`);
 };
 
 export const todolistSlice = createAppSlice({
@@ -55,15 +68,7 @@ export const todolistSlice = createAppSlice({
       state.saved = false;
     }),
     setTodoItems: create.reducer((state, action: { payload: TodoItem[] }) => {
-      state.todoItems = action.payload;
-      if (action.payload.length > 0) {
-        state.selectedItemId = action.payload[0].id;
-        state.selectedItemIndex = 0;
-      } else {
-        state.selectedItemId = undefined;
-        state.selectedItemIndex = undefined;
-      }
-      state.saved = true;
+      loadItems(state, action.payload);
     }),
     toggleDone: create.reducer((state, action: { payload: number }) => {
       if (state.selectedItemId !== action.payload) {
@@ -82,6 +87,31 @@ export const todolistSlice = createAppSlice({
         state.saved = false;
       }
     }),
+    load: create.asyncThunk(
+      async () => {
+        const result = await window.api.load();
+        return result;
+      },
+      {
+        pending: (state) => {
+          state.status = 'loading';
+          console.log('Loading...');
+        },
+        fulfilled: (state, action) => {
+          if (action.payload.success) {
+            state.status = 'idle';
+            loadItems(state, action.payload.items);
+          } else {
+            state.status = 'failed';
+            console.error('Save failed');
+          }
+        },
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Load failed');
+        },
+      },
+    ),
     save: create.asyncThunk(
       async (payload: TodoItem[]) => {
         const result = await window.api.save(payload);
@@ -126,4 +156,4 @@ export const {
 
 export const { getSelectedItemId, getSelectedItemIndex, getEditingTitle, getItems } =
   todolistSlice.selectors;
-export const { save } = todolistSlice.actions;
+export const { load, save } = todolistSlice.actions;

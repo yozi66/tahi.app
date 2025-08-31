@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import { TodoItem, isTodoItem } from '@common/types/TodoItem';
-import { MainState } from '@main/state/MainState';
+import { MainState } from '@main/state/MainStateType';
 import { readFileSync, writeFileSync } from 'fs';
 
 const saveTodoListAs = async (
@@ -70,4 +70,23 @@ export const loadTodoListFromPath = async (
     console.log(error);
   }
   return { success: false };
+};
+
+export const loadTodoList = async (
+  mainState: MainState,
+): Promise<{ success: boolean; items?: TodoItem[] }> => {
+  const result = await dialog.showOpenDialog(mainState.mainWindow, {
+    title: 'Open File',
+    properties: ['openFile'],
+    filters: [{ name: 'Tahi files', extensions: ['tahi'] }],
+  });
+  if (result.canceled || result.filePaths.length === 0) {
+    return { success: false };
+  }
+  const filepath = result.filePaths[0];
+  const answer = await loadTodoListFromPath(filepath);
+  if (answer.success) {
+    mainState.mainSettings.filepath = filepath;
+  }
+  return answer;
 };

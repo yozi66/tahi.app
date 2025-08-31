@@ -8,8 +8,8 @@ import {
   toggleDesktop,
   toggleMobile,
 } from '@renderer/features/ui/NavbarSlice';
-import { getItems, save } from '@renderer/features/todolist/TodolistSlice';
-import { IconDeviceFloppy } from '@renderer/components/TahiIcons';
+import { getItems, load, save } from '@renderer/features/todolist/TodolistSlice';
+import { IconDeviceFloppy, IconFolderOpen } from '@renderer/components/TahiIcons';
 import { ActionIcon } from '@mantine/core';
 
 export function TahiHeader(): React.JSX.Element {
@@ -34,6 +34,15 @@ export function TahiHeader(): React.JSX.Element {
         size="sm"
       />
       <img src={tahiLogo} alt="TAHI" />
+      <ActionIcon
+        variant="subtle"
+        color="blue"
+        size="sm"
+        aria-label="Save"
+        onClick={() => dispatch(load())}
+      >
+        <IconFolderOpen size={20} />
+      </ActionIcon>
       <ActionIcon
         variant="subtle"
         color="blue"

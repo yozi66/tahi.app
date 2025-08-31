@@ -5,6 +5,7 @@ import { TodoItem } from '@common/types/TodoItem';
 interface TahiApi {
   getVersions: () => Promise<NodeJS.ProcessVersions>;
   ping: () => void;
+  load: () => Promise<{ success: boolean; items: TodoItem[] }>;
   save: (list: TodoItem[]) => Promise<{ success: boolean }>;
   get_list: () => Promise<TodoItem[]>;
   onPushList: (callback: (list: TodoItem[]) => void) => void;
