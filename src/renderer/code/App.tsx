@@ -21,9 +21,9 @@ export default function App(): React.JSX.Element {
   if (!apiCallbacksAdded) {
     // dev loads twice due to React.StrictMode
     console.log('Adding handlers in renderer');
-    window.api.onPushList((list: TodoItem[]) => {
-      console.log('Received list from main process');
-      dispatch({ type: 'todolist/setTodoItems', payload: list });
+    window.api.onPushList((listName: string, list: TodoItem[]) => {
+      console.log(`Received ${listName} from main process`);
+      dispatch({ type: 'todolist/setTodoItems', payload: { listName: listName, items: list } });
     });
     dispatch(setApiCallbacksAdded(true));
   }

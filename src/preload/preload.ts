@@ -11,9 +11,9 @@ const api = {
   load: () => ipcRenderer.invoke('load'),
   save: (payload: TodoItem[]) => ipcRenderer.invoke('save', payload),
   get_list: () => ipcRenderer.invoke('get_list'),
-  onPushList: (callback: (list: TodoItem[]) => void) => {
-    ipcRenderer.once('push-list', (_event, list: TodoItem[]) => {
-      callback(list);
+  onPushList: (callback: (listName: string, todoList: TodoItem[]) => void) => {
+    ipcRenderer.once('push-list', (_event, listName: string, todoList: TodoItem[]) => {
+      callback(listName, todoList);
     });
   },
 };

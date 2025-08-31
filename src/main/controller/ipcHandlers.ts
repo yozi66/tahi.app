@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState } from '@main/state/MainStateType';
+import { MainState } from '@main/state/MainState';
 import { loadTodoList, saveTodoList } from '@main/repository/TodoListRepository';
 
 export function setupIpcHandlers(mainState: MainState): void {

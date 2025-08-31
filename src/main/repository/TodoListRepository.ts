@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import { TodoItem, isTodoItem } from '@common/types/TodoItem';
-import { MainState } from '@main/state/MainStateType';
+import { MainState } from '@main/state/MainState';
 import { readFileSync, writeFileSync } from 'fs';
 
 const saveTodoListAs = async (
@@ -24,7 +24,7 @@ const saveTodoListAs = async (
         writeFileSync(result.filePath, JSON.stringify(items, null, 2), 'utf-8');
         console.log(`Data successfully saved to ${result.filePath}`);
         mainState.mainSettings.filepath = result.filePath;
-        return { success: true };
+        return { success: true, listName: result.filePath };
       } catch (error) {
         console.error('Error saving data:', error);
       }
@@ -36,13 +36,13 @@ const saveTodoListAs = async (
 export const saveTodoList = async (
   items: TodoItem[],
   mainState: MainState,
-): Promise<{ success: boolean }> => {
+): Promise<{ success: boolean; listName?: string }> => {
   const filepath = mainState.mainSettings.filepath;
   if (filepath) {
     try {
       writeFileSync(filepath, JSON.stringify(items, null, 2), 'utf-8');
       console.log(`Data successfully saved to ${filepath}`);
-      return { success: true };
+      return { success: true, listName: filepath };
     } catch (error) {
       console.error('Error saving data:', error);
       return { success: false };
@@ -58,13 +58,13 @@ const isTodoItemArray = (obj: unknown): obj is TodoItem[] => {
 
 export const loadTodoListFromPath = async (
   filepath: string,
-): Promise<{ success: boolean; items?: TodoItem[] }> => {
+): Promise<{ success: boolean; listName?: string; items?: TodoItem[] }> => {
   try {
     const raw = readFileSync(filepath, 'utf-8');
     const items = JSON.parse(raw);
     if (isTodoItemArray(items)) {
       console.log(`loaded ${items.length} items from ${filepath}`);
-      return { success: true, items: items };
+      return { success: true, listName: filepath, items: items };
     }
   } catch (error) {
     console.log(error);

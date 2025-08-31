@@ -5,10 +5,10 @@ import { TodoItem } from '@common/types/TodoItem';
 interface TahiApi {
   getVersions: () => Promise<NodeJS.ProcessVersions>;
   ping: () => void;
-  load: () => Promise<{ success: boolean; items: TodoItem[] }>;
-  save: (list: TodoItem[]) => Promise<{ success: boolean }>;
+  load: () => Promise<{ success: boolean; listName: string; items: TodoItem[] }>;
+  save: (list: TodoItem[]) => Promise<{ success: boolean; listName?: string }>;
   get_list: () => Promise<TodoItem[]>;
-  onPushList: (callback: (list: TodoItem[]) => void) => void;
+  onPushList: (callback: (listName: string, todoList: TodoItem[]) => void) => void;
   // planned: onPushChanges: (callback: (changes: TodoChange[]) => void) => void;
   // Add other custom API methods here
   // For example:

@@ -2,7 +2,7 @@ import { app } from 'electron';
 import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
-import { MainSettings, isMainSettings } from '@main/state/MainStateType';
+import { MainSettings, isMainSettings } from '@main/state/MainState';
 
 const settingsPath = path.join(app.getPath('userData'), 'tahi-settings.json');
 

@@ -5,7 +5,7 @@ import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { setupIpcHandlers } from '@main/controller/ipcHandlers';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState } from '@main/state/MainStateType';
+import { MainState } from '@main/state/MainState';
 import { readMainSettings, saveMainSettings } from '@main/repository/MainSettingsRepository';
 import { TodoList } from '@main/state/TodoList';
 import { loadTodoListFromPath } from './repository/TodoListRepository';
@@ -53,7 +53,14 @@ function createMainWindow(): MainState {
   });
 
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('push-list', mainState.mainList.items);
+    console.log(
+      `did-finish-load: sending ${mainState.mainSettings.filepath} with ${mainState.mainList.items.length} items`,
+    );
+    mainWindow.webContents.send(
+      'push-list',
+      mainState.mainSettings.filepath,
+      mainState.mainList.items,
+    );
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
