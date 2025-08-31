@@ -36,6 +36,7 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
     state.selectedItemIndex = undefined;
   }
   state.saved = true;
+  document.title = listName;
   console.log(`Loaded ${items.length} items from ${listName}`);
 };
 
@@ -132,6 +133,7 @@ export const todolistSlice = createAppSlice({
             state.status = 'idle';
             state.saved = true;
             state.listName = action.payload.listName;
+            document.title = action.payload.listName;
             console.log(`Saved to ${action.payload.listName}`);
           } else {
             state.status = 'failed';
