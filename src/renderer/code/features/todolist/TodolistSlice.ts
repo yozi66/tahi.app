@@ -48,6 +48,22 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: (create) => ({
+    deleteRow: create.reducer((state) => {
+      if (state.selectedItemIndex != undefined) {
+        state.todoItems.splice(state.selectedItemIndex, 1);
+        if (state.todoItems.length > 0) {
+          if (state.selectedItemIndex >= state.todoItems.length) {
+            state.selectedItemIndex = state.todoItems.length - 1;
+          }
+          state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
+        } else {
+          state.selectedItemIndex = undefined;
+          state.selectedItemId = undefined;
+        }
+        state.editingTitle = false;
+        state.saved = false;
+      }
+    }),
     insertRowBelow: create.reducer((state) => {
       const newItem = { id: state.nextId++, title: '', done: false, comments: '' };
       const atIndex =
@@ -58,6 +74,7 @@ export const todolistSlice = createAppSlice({
       state.selectedItemIndex = atIndex;
       state.selectedItemId = newItem.id;
       state.editingTitle = true;
+      state.saved = false;
     }),
     setEditingTitle: create.reducer((state, action: { payload: boolean }) => {
       state.editingTitle = action.payload;
@@ -170,6 +187,7 @@ export const todolistSlice = createAppSlice({
   },
 });
 export const {
+  deleteRow,
   insertRowBelow,
   setSelectedItemId,
   setEditingTitle,
