@@ -8,8 +8,12 @@ import {
   toggleDesktop,
   toggleMobile,
 } from '@renderer/features/ui/NavbarSlice';
-import { getItems, load, save } from '@renderer/features/todolist/TodolistSlice';
-import { IconDeviceFloppy, IconFolderOpen } from '@renderer/components/TahiIcons';
+import { getItems, insertRowBelow, load, save } from '@renderer/features/todolist/TodolistSlice';
+import {
+  IconDeviceFloppy,
+  IconFolderOpen,
+  IconRowInsertBottom,
+} from '@renderer/components/TahiIcons';
 import { ActionIcon } from '@mantine/core';
 
 export function TahiHeader(): React.JSX.Element {
@@ -51,6 +55,15 @@ export function TahiHeader(): React.JSX.Element {
         onClick={() => dispatch(save(items))}
       >
         <IconDeviceFloppy size={20} />
+      </ActionIcon>
+      <ActionIcon
+        variant="subtle"
+        color="blue"
+        size="sm"
+        aria-label="Save"
+        onClick={() => dispatch(insertRowBelow())}
+      >
+        <IconRowInsertBottom size={20} />
       </ActionIcon>
     </Group>
   );

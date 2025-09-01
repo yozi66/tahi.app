@@ -7,6 +7,7 @@ export type TodolistSlice = {
   editingTitle?: boolean;
   listName: string;
   todoItems: TodoItem[];
+  nextId: number;
   saved?: boolean;
   status?: 'idle' | 'loading' | 'saving' | 'failed';
 };
@@ -21,6 +22,7 @@ const initialState: TodolistSlice = {
   editingTitle: false,
   listName: '(new TodoList)',
   todoItems: [],
+  nextId: 1,
   saved: true,
   status: 'idle',
 };
@@ -31,9 +33,11 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
   if (items.length > 0) {
     state.selectedItemId = items[0].id;
     state.selectedItemIndex = 0;
+    state.nextId = Math.max(...items.map((item) => item.id)) + 1;
   } else {
     state.selectedItemId = undefined;
     state.selectedItemIndex = undefined;
+    state.nextId = 1;
   }
   state.saved = true;
   document.title = listName;
@@ -44,6 +48,17 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: (create) => ({
+    insertRowBelow: create.reducer((state) => {
+      const newItem = { id: state.nextId++, title: '', done: false, comments: '' };
+      const atIndex =
+        state.selectedItemIndex === undefined || state.todoItems.length === 0
+          ? state.todoItems.length
+          : state.selectedItemIndex + 1;
+      state.todoItems.splice(atIndex, 0, newItem);
+      state.selectedItemIndex = atIndex;
+      state.selectedItemId = newItem.id;
+      state.editingTitle = true;
+    }),
     setEditingTitle: create.reducer((state, action: { payload: boolean }) => {
       state.editingTitle = action.payload;
     }),
@@ -155,6 +170,7 @@ export const todolistSlice = createAppSlice({
   },
 });
 export const {
+  insertRowBelow,
   setSelectedItemId,
   setEditingTitle,
   setSelectedTitle,
