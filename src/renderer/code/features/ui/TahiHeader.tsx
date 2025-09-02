@@ -1,5 +1,5 @@
 import React from 'react';
-import { Burger, Group } from '@mantine/core';
+import { ActionIcon, Burger, Group, Tooltip } from '@mantine/core';
 import tahiLogo from '@renderer/assets/tahi_logo_v3_32px.png';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import {
@@ -22,7 +22,6 @@ import {
   IconRowInsertBottom,
   IconTrashX,
 } from '@renderer/components/TahiIcons';
-import { ActionIcon } from '@mantine/core';
 
 export function TahiHeader(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -46,51 +45,61 @@ export function TahiHeader(): React.JSX.Element {
         size="sm"
       />
       <img src={tahiLogo} alt="TAHI" />
-      <ActionIcon
-        variant="subtle"
-        color="blue"
-        size="sm"
-        aria-label="Load"
-        onClick={() => dispatch(load())}
-      >
-        <IconFolderOpen size={20} />
-      </ActionIcon>
-      <ActionIcon
-        variant="subtle"
-        color="blue"
-        size="sm"
-        aria-label="Save"
-        onClick={() => dispatch(save({ items: items, saveAs: false }))}
-      >
-        <IconDeviceFloppy size={20} />
-      </ActionIcon>
-      <ActionIcon
-        variant="subtle"
-        color="blue"
-        size="sm"
-        aria-label="Save as"
-        onClick={() => dispatch(save({ items: items, saveAs: true }))}
-      >
-        <IconFilePencil size={20} />
-      </ActionIcon>
-      <ActionIcon
-        variant="subtle"
-        color="blue"
-        size="sm"
-        aria-label="Insert task"
-        onClick={() => dispatch(insertRowBelow())}
-      >
-        <IconRowInsertBottom size={20} />
-      </ActionIcon>
-      <ActionIcon
-        variant="subtle"
-        color="blue"
-        size="sm"
-        aria-label="Delete task"
-        onClick={() => dispatch(deleteRow())}
-      >
-        <IconTrashX size={20} />
-      </ActionIcon>
+      <Tooltip label="Load" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Load"
+          onClick={() => dispatch(load())}
+        >
+          <IconFolderOpen size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Save" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Save"
+          onClick={() => dispatch(save({ items: items, saveAs: false }))}
+        >
+          <IconDeviceFloppy size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Save as" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Save as"
+          onClick={() => dispatch(save({ items: items, saveAs: true }))}
+        >
+          <IconFilePencil size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Add task" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Add task"
+          onClick={() => dispatch(insertRowBelow())}
+        >
+          <IconRowInsertBottom size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Delete task" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Delete task"
+          onClick={() => dispatch(deleteRow())}
+        >
+          <IconTrashX size={20} />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 }
