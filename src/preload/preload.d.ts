@@ -6,7 +6,7 @@ interface TahiApi {
   getVersions: () => Promise<NodeJS.ProcessVersions>;
   ping: () => void;
   load: () => Promise<{ success: boolean; listName: string; items: TodoItem[] }>;
-  save: (list: TodoItem[]) => Promise<{ success: boolean; listName?: string }>;
+  save: (list: TodoItem[], saveAs?: boolean) => Promise<{ success: boolean; listName?: string }>;
   get_list: () => Promise<TodoItem[]>;
   onPushList: (callback: (listName: string, todoList: TodoItem[]) => void) => void;
   // planned: onPushChanges: (callback: (changes: TodoChange[]) => void) => void;

@@ -9,7 +9,7 @@ const api = {
   getVersions: () => ipcRenderer.invoke('get-versions'),
   ping: () => ipcRenderer.send('ping'),
   load: () => ipcRenderer.invoke('load'),
-  save: (payload: TodoItem[]) => ipcRenderer.invoke('save', payload),
+  save: (items: TodoItem[], saveAs?: boolean) => ipcRenderer.invoke('save', items, saveAs),
   get_list: () => ipcRenderer.invoke('get_list'),
   onPushList: (callback: (listName: string, todoList: TodoItem[]) => void) => {
     ipcRenderer.once('push-list', (_event, listName: string, todoList: TodoItem[]) => {

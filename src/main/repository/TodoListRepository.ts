@@ -3,13 +3,24 @@ import { TodoItem, isTodoItem } from '@common/types/TodoItem';
 import { MainState } from '@main/state/MainState';
 import { readFileSync, writeFileSync } from 'fs';
 
-const saveTodoListAs = async (
+const doSaveTodoList = (items: TodoItem[], filePath: string): boolean => {
+  try {
+    writeFileSync(filePath, JSON.stringify(items, null, 2), 'utf-8');
+    console.log(`Data successfully saved to ${filePath}`);
+    return true;
+  } catch (error) {
+    console.error('Error saving data:', error);
+    return false;
+  }
+};
+
+export const saveTodoListAs = async (
   items: TodoItem[],
   mainState: MainState,
-): Promise<{ success: boolean }> => {
+): Promise<{ success: boolean; listName?: string }> => {
   const options = {
     title: 'Save the todolist',
-    defaultPath: 'sampleList.tahi',
+    defaultPath: 'todolist.tahi',
     buttonLabel: 'Save',
     filters: [
       { name: 'Tahi Todolists', extensions: ['tahi'] },
@@ -20,13 +31,9 @@ const saveTodoListAs = async (
   return dialog.showSaveDialog(mainState.mainWindow, options).then((result) => {
     if (!result.canceled && result.filePath) {
       console.log('Save path: ', result.filePath);
-      try {
-        writeFileSync(result.filePath, JSON.stringify(items, null, 2), 'utf-8');
-        console.log(`Data successfully saved to ${result.filePath}`);
+      if (doSaveTodoList(items, result.filePath)) {
         mainState.mainSettings.filepath = result.filePath;
         return { success: true, listName: result.filePath };
-      } catch (error) {
-        console.error('Error saving data:', error);
       }
     }
     return { success: false };
@@ -38,15 +45,8 @@ export const saveTodoList = async (
   mainState: MainState,
 ): Promise<{ success: boolean; listName?: string }> => {
   const filepath = mainState.mainSettings.filepath;
-  if (filepath) {
-    try {
-      writeFileSync(filepath, JSON.stringify(items, null, 2), 'utf-8');
-      console.log(`Data successfully saved to ${filepath}`);
-      return { success: true, listName: filepath };
-    } catch (error) {
-      console.error('Error saving data:', error);
-      return { success: false };
-    }
+  if (filepath && doSaveTodoList(items, filepath)) {
+    return { success: true, listName: filepath };
   } else {
     return saveTodoListAs(items, mainState);
   }

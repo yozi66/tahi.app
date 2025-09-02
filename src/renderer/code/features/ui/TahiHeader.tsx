@@ -17,6 +17,7 @@ import {
 } from '@renderer/features/todolist/TodolistSlice';
 import {
   IconDeviceFloppy,
+  IconFilePencil,
   IconFolderOpen,
   IconRowInsertBottom,
   IconTrashX,
@@ -49,7 +50,7 @@ export function TahiHeader(): React.JSX.Element {
         variant="subtle"
         color="blue"
         size="sm"
-        aria-label="Save"
+        aria-label="Load"
         onClick={() => dispatch(load())}
       >
         <IconFolderOpen size={20} />
@@ -59,7 +60,7 @@ export function TahiHeader(): React.JSX.Element {
         color="blue"
         size="sm"
         aria-label="Save"
-        onClick={() => dispatch(save(items))}
+        onClick={() => dispatch(save({ items: items, saveAs: false }))}
       >
         <IconDeviceFloppy size={20} />
       </ActionIcon>
@@ -67,7 +68,16 @@ export function TahiHeader(): React.JSX.Element {
         variant="subtle"
         color="blue"
         size="sm"
-        aria-label="Save"
+        aria-label="Save as"
+        onClick={() => dispatch(save({ items: items, saveAs: true }))}
+      >
+        <IconFilePencil size={20} />
+      </ActionIcon>
+      <ActionIcon
+        variant="subtle"
+        color="blue"
+        size="sm"
+        aria-label="Insert task"
         onClick={() => dispatch(insertRowBelow())}
       >
         <IconRowInsertBottom size={20} />
@@ -76,7 +86,7 @@ export function TahiHeader(): React.JSX.Element {
         variant="subtle"
         color="blue"
         size="sm"
-        aria-label="Save"
+        aria-label="Delete task"
         onClick={() => dispatch(deleteRow())}
       >
         <IconTrashX size={20} />

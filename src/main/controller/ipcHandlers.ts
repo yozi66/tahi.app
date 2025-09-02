@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/state/sampleListState';
 import { MainState } from '@main/state/MainState';
-import { loadTodoList, saveTodoList } from '@main/repository/TodoListRepository';
+import { loadTodoList, saveTodoList, saveTodoListAs } from '@main/repository/TodoListRepository';
 
 export function setupIpcHandlers(mainState: MainState): void {
   // IPC test
@@ -17,8 +17,8 @@ export function setupIpcHandlers(mainState: MainState): void {
     return loadTodoList(mainState);
   });
 
-  ipcMain.handle('save', async (_event, payload) => {
-    return saveTodoList(payload, mainState);
+  ipcMain.handle('save', async (_event, items, saveAs) => {
+    return saveAs ? saveTodoListAs(items, mainState) : saveTodoList(items, mainState);
   });
 
   ipcMain.handle('get_list', async () => {

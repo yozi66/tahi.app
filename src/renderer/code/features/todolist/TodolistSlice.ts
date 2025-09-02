@@ -76,6 +76,59 @@ export const todolistSlice = createAppSlice({
       state.editingTitle = true;
       state.saved = false;
     }),
+    load: create.asyncThunk(
+      async () => {
+        const result = await window.api.load();
+        return result;
+      },
+      {
+        pending: (state) => {
+          state.status = 'loading';
+          console.log('Loading...');
+        },
+        fulfilled: (state, action) => {
+          if (action.payload.success) {
+            state.status = 'idle';
+            loadItems(state, action.payload.listName, action.payload.items);
+          } else {
+            state.status = 'failed';
+            console.error('Save failed');
+          }
+        },
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Load failed');
+        },
+      },
+    ),
+    save: create.asyncThunk(
+      async (payload: { items: TodoItem[]; saveAs?: boolean }) => {
+        const result = await window.api.save(payload.items, payload.saveAs);
+        return result; // { success: boolean, listName?: string }
+      },
+      {
+        pending: (state) => {
+          state.status = 'saving';
+          console.log('Saving...');
+        },
+        fulfilled: (state, action) => {
+          if (action.payload.success && action.payload.listName !== undefined) {
+            state.status = 'idle';
+            state.saved = true;
+            state.listName = action.payload.listName;
+            document.title = action.payload.listName;
+            console.log(`Saved to ${action.payload.listName}`);
+          } else {
+            state.status = 'failed';
+            console.error('Save failed');
+          }
+        },
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Save failed');
+        },
+      },
+    ),
     setEditingTitle: create.reducer((state, action: { payload: boolean }) => {
       state.editingTitle = action.payload;
     }),
@@ -125,59 +178,6 @@ export const todolistSlice = createAppSlice({
         state.saved = false;
       }
     }),
-    load: create.asyncThunk(
-      async () => {
-        const result = await window.api.load();
-        return result;
-      },
-      {
-        pending: (state) => {
-          state.status = 'loading';
-          console.log('Loading...');
-        },
-        fulfilled: (state, action) => {
-          if (action.payload.success) {
-            state.status = 'idle';
-            loadItems(state, action.payload.listName, action.payload.items);
-          } else {
-            state.status = 'failed';
-            console.error('Save failed');
-          }
-        },
-        rejected: (state) => {
-          state.status = 'failed';
-          console.error('Load failed');
-        },
-      },
-    ),
-    save: create.asyncThunk(
-      async (payload: TodoItem[]) => {
-        const result = await window.api.save(payload);
-        return result; // { success: boolean, listName?: string }
-      },
-      {
-        pending: (state) => {
-          state.status = 'saving';
-          console.log('Saving...');
-        },
-        fulfilled: (state, action) => {
-          if (action.payload.success && action.payload.listName !== undefined) {
-            state.status = 'idle';
-            state.saved = true;
-            state.listName = action.payload.listName;
-            document.title = action.payload.listName;
-            console.log(`Saved to ${action.payload.listName}`);
-          } else {
-            state.status = 'failed';
-            console.error('Save failed');
-          }
-        },
-        rejected: (state) => {
-          state.status = 'failed';
-          console.error('Save failed');
-        },
-      },
-    ),
   }),
   selectors: {
     getSelectedItemId: (state) => state.selectedItemId,
