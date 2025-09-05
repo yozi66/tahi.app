@@ -28,6 +28,7 @@ export function TahiHeader(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
   const items = useAppSelector(getItems);
+  const selectedItemId = useAppSelector((state) => state.todolist.selectedItemId);
 
   return (
     <Group h="100%" px="md">
@@ -95,7 +96,7 @@ export function TahiHeader(): React.JSX.Element {
           color="blue"
           size="sm"
           aria-label="Delete task"
-          onClick={() => dispatch(deleteRow())}
+          onClick={() => dispatch(deleteRow(selectedItemId))}
         >
           <IconTrashX size={20} />
         </ActionIcon>

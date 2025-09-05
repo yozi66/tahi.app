@@ -9,7 +9,7 @@ export type TodolistSlice = {
   todoItems: TodoItem[];
   nextId: number;
   saved?: boolean;
-  status?: 'idle' | 'loading' | 'saving' | 'failed';
+  status?: 'idle' | 'loading' | 'saving' | 'failed' | 'synching';
 };
 
 const computeItemIndex = (todoItems: TodoItem[], id: number): number => {
@@ -48,22 +48,49 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: (create) => ({
-    deleteRow: create.reducer((state) => {
-      if (state.selectedItemIndex != undefined) {
-        state.todoItems.splice(state.selectedItemIndex, 1);
-        if (state.todoItems.length > 0) {
-          if (state.selectedItemIndex >= state.todoItems.length) {
-            state.selectedItemIndex = state.todoItems.length - 1;
-          }
-          state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
-        } else {
-          state.selectedItemIndex = undefined;
-          state.selectedItemId = undefined;
+    deleteRow: create.asyncThunk(
+      async (payload: number | undefined) => {
+        if (payload != undefined) {
+          console.log(`Sending deleteItems ${payload}`);
+          const result = await window.api.applyChange({
+            type: 'deleteItems',
+            ids: [payload],
+          });
+          return result; // AnyChange[] - further changes to apply
         }
-        state.editingTitle = false;
-        state.saved = false;
-      }
-    }),
+        console.log('No row selected to delete');
+        return []; // No changes to apply
+      },
+      {
+        pending: (state) => {
+          state.status = 'synching';
+          if (state.selectedItemIndex != undefined && state.selectedItemId != undefined) {
+            // Update local state immediately for responsiveness
+            console.log(`Deleting local item ${state.selectedItemId}`);
+            state.todoItems.splice(state.selectedItemIndex, 1);
+            if (state.todoItems.length > 0) {
+              if (state.selectedItemIndex >= state.todoItems.length) {
+                state.selectedItemIndex = state.todoItems.length - 1;
+              }
+              state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
+            } else {
+              state.selectedItemIndex = undefined;
+              state.selectedItemId = undefined;
+            }
+            state.editingTitle = false;
+            state.saved = false;
+          }
+        },
+        fulfilled: (state, action) => {
+          state.status = 'idle';
+          console.log(`Further changes to apply: ${action.payload.length}`);
+        },
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Delete failed');
+        },
+      },
+    ),
     insertRowBelow: create.reducer((state) => {
       const newItem = { id: state.nextId++, title: '', done: false, comments: '' };
       const atIndex =

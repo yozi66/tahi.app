@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { TodoItem } from '@common/types/TodoItem';
+import { AnyChange } from '@common/types/AnyChange';
 
 console.log('Preload script is running!');
 console.log('Reload (ctrl+r) may be needed to load React DevTools');
@@ -16,6 +17,14 @@ const api = {
       callback(listName, todoList);
     });
   },
+  applyChange: (change: AnyChange) => ipcRenderer.invoke('apply-change', change),
+  /* planned extension:
+  onPushChanges: (callback: (changes: AnyChange[]) => void) => {
+    ipcRenderer.on('push-change', (_event, changes: AnyChange[]) => {
+      callback(changes);
+    });
+  },
+  */
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
