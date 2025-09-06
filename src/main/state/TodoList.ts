@@ -21,7 +21,7 @@ export class TodoList {
     this._saved = options.saved;
   }
   deleteItems(ids: number[]): { undo: AnyChange | undefined; effects: AnyChange[] } {
-    const { items, removed } = applyDeleteItems(this._items, ids);
+    const { removed } = applyDeleteItems(this._items, ids);
     if (removed.length === 0) {
       console.log('No items found to delete');
       return { undo: undefined, effects: [] };
@@ -30,9 +30,6 @@ export class TodoList {
       type: 'addItems',
       items: removed,
     };
-    // perform the deletion
-    console.log(`Deleting item(s) with id(s): ${ids.join(', ')}`);
-    this._items = items;
     this._saved = false;
     return { undo: undoChange, effects: [] };
   }
@@ -44,7 +41,7 @@ export class TodoList {
       console.log('No items provided to add');
       return { undo: undefined, effects: [] };
     }
-    this._items = applyAddItems(this._items, itemsWithIndex).items;
+    applyAddItems(this._items, itemsWithIndex);
     this._saved = false;
     const undoChange: AnyChange = {
       type: 'deleteItems',

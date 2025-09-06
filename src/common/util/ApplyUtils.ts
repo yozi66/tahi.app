@@ -1,46 +1,79 @@
 import { TodoItem } from '@common/types/TodoItem';
-// Shared pure helpers for applying add/delete changes on TodoItem arrays.
-// Non-mutating: callers should reassign the returned array.
+import type { Draft } from 'immer';
+// Shared helpers for applying add/delete changes on TodoItem arrays in-place.
 
 export const applyAddItems = (
-  items: ReadonlyArray<TodoItem>,
+  items: Draft<TodoItem[]>, // works with both TodoItem[] and Immer Draft<TodoItem[]>
   itemsWithIndex: { item: TodoItem; index: number }[],
-): { items: TodoItem[] } => {
+): void => {
   if (itemsWithIndex.length === 0) {
-    return { items: items.slice() as TodoItem[] };
+    console.log('applyAddItems: nothing to add');
+    return;
   }
-  // copy once for speed; splice on the copy
-  const out: TodoItem[] = items.slice() as TodoItem[];
-  itemsWithIndex
-    .slice()
-    .sort((a, b) => a.index - b.index)
-    .forEach(({ item, index }) => {
-      if (index < 0 || index > out.length) {
-        out.push(item);
-      } else {
-        out.splice(index, 0, item);
-      }
-    });
-  return { items: out };
+  // Remove any additions with IDs that already exist in the current list
+  // and de-duplicate within the incoming batch. Operates in-place for speed.
+  console.log(`applyAddItems: adding ${itemsWithIndex.length} items`);
+  const existingIds = new Set<number>();
+  for (let i = 0; i < items.length; i++) {
+    existingIds.add(items[i].id);
+  }
+  let write = 0;
+  for (let read = 0; read < itemsWithIndex.length; read++) {
+    const entry = itemsWithIndex[read];
+    if (existingIds.has(entry.item.id)) {
+      console.warn(`applyAddItems: duplicate id ${entry.item.id} at ${entry.index}, skipping`);
+      continue;
+    }
+    existingIds.add(entry.item.id);
+    if (write !== read) {
+      itemsWithIndex[write] = entry;
+    }
+    write++;
+  }
+  if (write === 0) {
+    console.log('applyAddItems: all items were duplicates, nothing to add');
+    return;
+  }
+  if (write < itemsWithIndex.length) {
+    itemsWithIndex.length = write;
+  }
+  // Sort by index to ensure correct insertion order
+  itemsWithIndex.sort((a, b) => a.index - b.index);
+  for (const { item, index } of itemsWithIndex) {
+    if (index < 0 || index > items.length) {
+      console.warn(`applyAddItems: index ${index} out of bounds, appending instead`);
+      items.push(item);
+    } else {
+      items.splice(index, 0, item);
+    }
+  }
+  console.log(`applyAddItems: added ${itemsWithIndex.length} items`);
 };
 
 export const applyDeleteItems = (
-  items: ReadonlyArray<TodoItem>,
+  items: Draft<TodoItem[]>, // works with both TodoItem[] and Immer Draft<TodoItem[]>
   ids: number[],
-): { items: TodoItem[]; removed: { item: TodoItem; index: number }[] } => {
+): { removed: { item: TodoItem; index: number }[] } => {
   if (ids.length === 0 || items.length === 0) {
-    return { items: items.slice() as TodoItem[], removed: [] };
+    console.log('applyDeleteItems: nothing to remove');
+    return { removed: [] };
   }
   const idSet = new Set(ids);
+  console.log(`applyDeleteItems: removing ${idSet.size} items`);
   const removed: { item: TodoItem; index: number }[] = [];
-  items.forEach((item, index) => {
-    if (idSet.has(item.id)) {
-      removed.push({ item, index });
+  // copy items to front, skipping removed ones
+  let write = 0;
+  for (let read = 0; read < items.length; read++) {
+    const it = items[read];
+    if (idSet.has(it.id)) {
+      removed.push({ item: it, index: read });
+    } else {
+      if (write !== read) items[write] = it;
+      write++;
     }
-  });
-  if (removed.length === 0) {
-    return { items: items.slice() as TodoItem[], removed };
   }
-  const kept = (items as TodoItem[]).filter((item) => !idSet.has(item.id));
-  return { items: kept, removed };
+  console.log(`applyDeleteItems: removed ${removed.length} items`);
+  // remove leftover items at the end
+  if (write < items.length) items.length = write;
+  return { removed };
 };

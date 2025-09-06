@@ -25,6 +25,8 @@ export default tseslint.config(
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactRefresh.configs.vite.rules,
+      // Enforce curly braces for all control statements
+      curly: ['error', 'all'],
       'no-restricted-imports': [
         'error',
         {

@@ -21,17 +21,25 @@ class UndoRedoHistory {
 
   undo(exec: ChangeExecutor): AnyChange[] {
     const last = this._past.pop();
-    if (!last) return [];
+    if (!last) {
+      return [];
+    }
     const { undo, effects } = exec(last);
-    if (undo) this._future.push(undo);
+    if (undo) {
+      this._future.push(undo);
+    }
     return [last, ...effects];
   }
 
   redo(exec: ChangeExecutor): AnyChange[] {
     const next = this._future.pop();
-    if (!next) return [];
+    if (!next) {
+      return [];
+    }
     const { undo, effects } = exec(next);
-    if (undo) this._past.push(undo);
+    if (undo) {
+      this._past.push(undo);
+    }
     return [next, ...effects];
   }
 }

@@ -50,14 +50,17 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
   console.log(`Loaded ${items.length} items from ${listName}`);
 };
 
-const applyChanges = (state: Draft<TodolistSlice>, { payload }: PayloadAction<AnyChange[]>) => {
+const applyChanges = (
+  state: Draft<TodolistSlice>,
+  { payload }: PayloadAction<AnyChange[]>,
+): void => {
   state.status = 'idle';
   console.log(`Applying ${payload.length} changes`);
   for (const change of payload) {
     switch (change.type) {
       case 'addItems': {
         const itemsWithIndex = change.items;
-        state.todoItems = applyAddItems(state.todoItems, itemsWithIndex).items;
+        applyAddItems(state.todoItems, itemsWithIndex);
         // update nextId to be higher than any new item id
         const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
         if (maxNewId >= state.nextId) {
@@ -67,11 +70,10 @@ const applyChanges = (state: Draft<TodolistSlice>, { payload }: PayloadAction<An
         break;
       }
       case 'deleteItems': {
-        const { items } = applyDeleteItems(state.todoItems, change.ids);
+        applyDeleteItems(state.todoItems, change.ids);
         const idsToDelete = new Set(change.ids);
         const selectedWasDeleted =
           state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
-        state.todoItems = items;
         if (selectedWasDeleted) {
           // Selected item was deleted, update selection
           if (state.todoItems.length > 0) {
