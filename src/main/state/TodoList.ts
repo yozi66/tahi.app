@@ -1,5 +1,6 @@
 import { TodoItem } from '@common/types/TodoItem';
 import { AnyChange } from '@common/types/AnyChange';
+import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
 
 export class TodoList {
   constructor(
@@ -20,22 +21,18 @@ export class TodoList {
     this._saved = options.saved;
   }
   deleteItems(ids: number[]): { undo: AnyChange | undefined; effects: AnyChange[] } {
-    const deletedIds = new Set(ids);
-    // collect the items to be deleted for undo
-    const itemsToDelete: { item: TodoItem; index: number }[] = this._items
-      .map((item, index) => ({ item, index }))
-      .filter((pair) => deletedIds.has(pair.item.id));
-    if (itemsToDelete.length === 0) {
+    const { items, removed } = applyDeleteItems(this._items, ids);
+    if (removed.length === 0) {
       console.log('No items found to delete');
       return { undo: undefined, effects: [] };
     }
     const undoChange: AnyChange = {
       type: 'addItems',
-      items: itemsToDelete,
+      items: removed,
     };
     // perform the deletion
     console.log(`Deleting item(s) with id(s): ${ids.join(', ')}`);
-    this._items = this._items.filter((item) => !deletedIds.has(item.id));
+    this._items = items;
     this._saved = false;
     return { undo: undoChange, effects: [] };
   }
@@ -47,16 +44,7 @@ export class TodoList {
       console.log('No items provided to add');
       return { undo: undefined, effects: [] };
     }
-    // sort by index to insert in correct order
-    itemsWithIndex.sort((a, b) => a.index - b.index);
-    for (const { item, index } of itemsWithIndex) {
-      if (index < 0 || index > this._items.length) {
-        console.warn(`Index ${index} out of bounds, appending item with id ${item.id} at the end`);
-        this._items.push(item);
-      } else {
-        this._items.splice(index, 0, item);
-      }
-    }
+    this._items = applyAddItems(this._items, itemsWithIndex).items;
     this._saved = false;
     const undoChange: AnyChange = {
       type: 'deleteItems',

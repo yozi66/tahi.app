@@ -4,6 +4,38 @@ import { AnyChange } from '@common/types/AnyChange';
 import { TodoList } from '@main/state/TodoList';
 import { TodoItem } from '@common/types/TodoItem';
 
+type ChangeExecutor = (change: AnyChange) => { undo?: AnyChange; effects: AnyChange[] };
+
+class UndoRedoHistory {
+  private _past: AnyChange[] = [];
+  private _future: AnyChange[] = [];
+
+  apply(change: AnyChange, exec: ChangeExecutor): AnyChange[] {
+    const { undo, effects } = exec(change);
+    if (undo) {
+      this._past.push(undo);
+      this._future.length = 0;
+    }
+    return effects;
+  }
+
+  undo(exec: ChangeExecutor): AnyChange[] {
+    const last = this._past.pop();
+    if (!last) return [];
+    const { undo, effects } = exec(last);
+    if (undo) this._future.push(undo);
+    return [last, ...effects];
+  }
+
+  redo(exec: ChangeExecutor): AnyChange[] {
+    const next = this._future.pop();
+    if (!next) return [];
+    const { undo, effects } = exec(next);
+    if (undo) this._past.push(undo);
+    return [next, ...effects];
+  }
+}
+
 export type MainSettings = {
   filepath?: string;
 };
@@ -20,8 +52,7 @@ export class MainState {
     private _mainList: TodoList,
     private _mainSettings: MainSettings,
   ) {}
-  private _past: AnyChange[] = [];
-  private _future: AnyChange[] = [];
+  private _history = new UndoRedoHistory();
 
   get mainWindow(): BrowserWindow {
     return this._mainWindow;
@@ -35,87 +66,25 @@ export class MainState {
   setAllItems(newItems: TodoItem[], options: { saved: boolean }): void {
     this._mainList.setAllItems(newItems, options);
   }
-  applyChange(change: AnyChange): AnyChange[] {
+  private _exec: ChangeExecutor = (change: AnyChange) => {
     switch (change.type) {
-      case 'addItems': {
-        const { undo, effects } = this._mainList.addItems(change.items);
-        if (undo) {
-          this._past.push(undo);
-          this._future = []; // clear future on new action
-        }
-        return effects;
-      }
-      case 'deleteItems': {
-        const { undo, effects } = this._mainList.deleteItems(change.ids);
-        if (undo) {
-          this._past.push(undo);
-          this._future = []; // clear future on new action
-        }
-        return effects;
-      }
-      // Exhaustiveness check (compile-time)
+      case 'addItems':
+        return this._mainList.addItems(change.items);
+      case 'deleteItems':
+        return this._mainList.deleteItems(change.ids);
       default: {
         const _exhaustiveCheck: never = change;
         return _exhaustiveCheck;
       }
     }
+  };
+  applyChange(change: AnyChange): AnyChange[] {
+    return this._history.apply(change, this._exec);
   }
   undo(): AnyChange[] {
-    const lastChange = this._past.pop();
-    if (!lastChange) {
-      console.log('No actions to undo');
-      return [];
-    }
-    console.log(`Undoing change: ${lastChange.type}`);
-    switch (lastChange.type) {
-      case 'deleteItems': {
-        const { undo, effects } = this._mainList.deleteItems(lastChange.ids);
-        if (undo) {
-          this._future.push(undo);
-        }
-        return [lastChange, ...effects];
-      }
-      case 'addItems': {
-        const { undo, effects } = this._mainList.addItems(lastChange.items);
-        if (undo) {
-          this._future.push(undo);
-        }
-        return [lastChange, ...effects];
-      }
-      // Exhaustiveness check (compile-time)
-      default: {
-        const _exhaustiveCheck: never = lastChange;
-        return _exhaustiveCheck;
-      }
-    }
+    return this._history.undo(this._exec);
   }
   redo(): AnyChange[] {
-    const nextChange = this._future.pop();
-    if (!nextChange) {
-      console.log('No actions to redo');
-      return [];
-    }
-    console.log(`Redoing change: ${nextChange.type}`);
-    switch (nextChange.type) {
-      case 'deleteItems': {
-        const { undo, effects } = this._mainList.deleteItems(nextChange.ids);
-        if (undo) {
-          this._past.push(undo);
-        }
-        return [nextChange, ...effects];
-      }
-      case 'addItems': {
-        const { undo, effects } = this._mainList.addItems(nextChange.items);
-        if (undo) {
-          this._past.push(undo);
-        }
-        return [nextChange, ...effects];
-      }
-      // Exhaustiveness check (compile-time)
-      default: {
-        const _exhaustiveCheck: never = nextChange;
-        return _exhaustiveCheck;
-      }
-    }
+    return this._history.redo(this._exec);
   }
 }

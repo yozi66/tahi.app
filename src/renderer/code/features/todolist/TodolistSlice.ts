@@ -3,6 +3,7 @@ import { TodoItem } from '@common/types/TodoItem';
 import { Draft } from 'immer';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { AnyChange } from '@common/types/AnyChange';
+import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
 
 // State of the todolist feature
 
@@ -56,28 +57,22 @@ const applyChanges = (state: Draft<TodolistSlice>, { payload }: PayloadAction<An
     switch (change.type) {
       case 'addItems': {
         const itemsWithIndex = change.items;
-        // sort by index to insert in correct order
-        itemsWithIndex.sort((a, b) => a.index - b.index);
-        for (const { item, index } of itemsWithIndex) {
-          if (index < 0 || index > state.todoItems.length) {
-            console.warn(
-              `Index ${index} out of bounds, appending item with id ${item.id} at the end`,
-            );
-            state.todoItems.push(item);
-          } else {
-            state.todoItems.splice(index, 0, item);
-          }
-          if (item.id >= state.nextId) {
-            state.nextId = item.id + 1;
-          }
+        state.todoItems = applyAddItems(state.todoItems, itemsWithIndex).items;
+        // update nextId to be higher than any new item id
+        const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
+        if (maxNewId >= state.nextId) {
+          state.nextId = maxNewId + 1;
         }
         state.saved = false;
         break;
       }
       case 'deleteItems': {
+        const { items } = applyDeleteItems(state.todoItems, change.ids);
         const idsToDelete = new Set(change.ids);
-        state.todoItems = state.todoItems.filter((item) => !idsToDelete.has(item.id));
-        if (state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId)) {
+        const selectedWasDeleted =
+          state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
+        state.todoItems = items;
+        if (selectedWasDeleted) {
           // Selected item was deleted, update selection
           if (state.todoItems.length > 0) {
             state.selectedItemIndex = Math.min(
