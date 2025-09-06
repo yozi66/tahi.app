@@ -38,11 +38,7 @@ function createMainWindow(): MainState {
     },
   });
 
-  const mainState: MainState = {
-    mainWindow: mainWindow,
-    mainList: new TodoList(sampleList),
-    mainSettings: readMainSettings(),
-  };
+  const mainState = new MainState(mainWindow, new TodoList(sampleList), readMainSettings());
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();

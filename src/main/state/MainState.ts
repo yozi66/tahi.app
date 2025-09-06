@@ -13,11 +13,22 @@ export const isMainSettings = (obj: unknown): boolean => {
   );
 };
 
-export type MainState = {
-  mainWindow: BrowserWindow;
-  mainList: TodoList;
-  mainSettings: MainSettings;
-};
+export class MainState {
+  constructor(
+    private _mainWindow: BrowserWindow,
+    private _mainList: TodoList,
+    private _mainSettings: MainSettings,
+  ) {}
+  get mainWindow(): BrowserWindow {
+    return this._mainWindow;
+  }
+  get mainList(): TodoList {
+    return this._mainList;
+  }
+  get mainSettings(): MainSettings {
+    return this._mainSettings;
+  }
+}
 
 export const applyChange = (state: MainState, change: AnyChange): AnyChange[] => {
   switch (change.type) {
