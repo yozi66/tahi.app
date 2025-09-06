@@ -9,13 +9,15 @@ import {
   toggleMobile,
 } from '@renderer/features/ui/NavbarSlice';
 import {
-  deleteRow,
   getItems,
-  insertRowBelow,
+  getNextId,
+  getSelectedItemId,
+  getSelectedItemIndex,
   load,
   save,
   undo,
   redo,
+  sendAndApplyChange,
 } from '@renderer/features/todolist/TodolistSlice';
 import {
   IconArrowBackUp,
@@ -32,7 +34,9 @@ export function TahiHeader(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
   const items = useAppSelector(getItems);
-  const selectedItemId = useAppSelector((state) => state.todolist.selectedItemId);
+  const selectedItemId = useAppSelector(getSelectedItemId);
+  const selectedItemIndex = useAppSelector(getSelectedItemIndex);
+  const nextId = useAppSelector(getNextId);
 
   return (
     <Group h="100%" px="md">
@@ -89,7 +93,18 @@ export function TahiHeader(): React.JSX.Element {
           color="blue"
           size="sm"
           aria-label="Add task"
-          onClick={() => dispatch(insertRowBelow())}
+          onClick={() => {
+            const atIndex =
+              selectedItemIndex === undefined || selectedItemIndex < 0 ? -1 : selectedItemIndex + 1;
+            dispatch(
+              sendAndApplyChange({
+                type: 'addItems',
+                items: [
+                  { item: { id: nextId, title: '', done: false, comments: '' }, index: atIndex },
+                ],
+              }),
+            );
+          }}
         >
           <IconRowInsertBottom size={20} />
         </ActionIcon>
@@ -100,7 +115,16 @@ export function TahiHeader(): React.JSX.Element {
           color="blue"
           size="sm"
           aria-label="Delete task"
-          onClick={() => dispatch(deleteRow(selectedItemId))}
+          onClick={() => {
+            if (selectedItemId !== undefined) {
+              dispatch(
+                sendAndApplyChange({
+                  type: 'deleteItems',
+                  ids: [selectedItemId],
+                }),
+              );
+            }
+          }}
         >
           <IconTrashX size={20} />
         </ActionIcon>

@@ -107,61 +107,73 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: (create) => ({
-    deleteRow: create.asyncThunk(
-      async (payload: number | undefined) => {
-        if (payload != undefined) {
-          console.log(`Sending deleteItems ${payload}`);
-          const result = await window.api.applyChange({
-            type: 'deleteItems',
-            ids: [payload],
-          });
-          return result; // AnyChange[] - further changes to apply
-        }
-        console.log('No row selected to delete');
-        return []; // No changes to apply
+    // Merge delete/insert into one generic change sender with optimistic apply
+    sendAndApplyChange: create.asyncThunk(
+      async (payload: AnyChange) => {
+        const result = await window.api.applyChange(payload);
+        return result; // AnyChange[] - further changes to apply
       },
       {
-        pending: (state) => {
+        pending: (state, action: { meta: { arg: AnyChange } }) => {
           state.status = 'synching';
-          if (state.selectedItemIndex != undefined && state.selectedItemId != undefined) {
-            // Update local state immediately for responsiveness
-            console.log(`Deleting local item ${state.selectedItemId}`);
-            state.todoItems.splice(state.selectedItemIndex, 1);
-            if (state.todoItems.length > 0) {
-              if (state.selectedItemIndex >= state.todoItems.length) {
-                state.selectedItemIndex = state.todoItems.length - 1;
+          const change = action.meta.arg;
+          switch (change.type) {
+            case 'deleteItems': {
+              // Optimistic local delete
+              applyDeleteItems(state.todoItems, change.ids);
+              const idsToDelete = new Set(change.ids);
+              const selectedWasDeleted =
+                state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
+              if (selectedWasDeleted) {
+                if (state.todoItems.length > 0) {
+                  state.selectedItemIndex = Math.min(
+                    state.selectedItemIndex ?? 0,
+                    state.todoItems.length - 1,
+                  );
+                  state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
+                } else {
+                  state.selectedItemId = undefined;
+                  state.selectedItemIndex = undefined;
+                }
+                state.editingTitle = false;
+              } else if (state.selectedItemId !== undefined) {
+                state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
               }
-              state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
-            } else {
-              state.selectedItemIndex = undefined;
-              state.selectedItemId = undefined;
+              state.saved = false;
+              break;
             }
-            state.editingTitle = false;
-            state.saved = false;
+            case 'addItems': {
+              // Optimistic local add
+              const itemsWithIndex = change.items;
+              applyAddItems(state.todoItems, itemsWithIndex);
+              // update nextId to be higher than any new item id
+              const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
+              if (maxNewId >= state.nextId) {
+                state.nextId = maxNewId + 1;
+              }
+              // Focus selection on first added item
+              if (itemsWithIndex.length > 0) {
+                const firstId = itemsWithIndex[0].item.id;
+                state.selectedItemId = firstId;
+                state.selectedItemIndex = computeItemIndex(state.todoItems, firstId);
+                state.editingTitle = true;
+              }
+              state.saved = false;
+              break;
+            }
+            default: {
+              const _exhaustiveCheck: never = change;
+              return _exhaustiveCheck;
+            }
           }
         },
-        fulfilled: (state, action) => {
-          state.status = 'idle';
-          console.log(`Further changes to apply: ${action.payload.length}`);
-        },
+        fulfilled: applyChanges,
         rejected: (state) => {
           state.status = 'failed';
-          console.error('Delete failed');
+          console.error('Change failed');
         },
       },
     ),
-    insertRowBelow: create.reducer((state) => {
-      const newItem = { id: state.nextId++, title: '', done: false, comments: '' };
-      const atIndex =
-        state.selectedItemIndex === undefined || state.todoItems.length === 0
-          ? state.todoItems.length
-          : state.selectedItemIndex + 1;
-      state.todoItems.splice(atIndex, 0, newItem);
-      state.selectedItemIndex = atIndex;
-      state.selectedItemId = newItem.id;
-      state.editingTitle = true;
-      state.saved = false;
-    }),
     load: create.asyncThunk(
       async () => {
         const result = await window.api.load();
@@ -300,15 +312,15 @@ export const todolistSlice = createAppSlice({
     ),
   }),
   selectors: {
-    getSelectedItemId: (state) => state.selectedItemId,
-    getSelectedItemIndex: (state) => state.selectedItemIndex,
     getEditingTitle: (state) => state.editingTitle,
     getItems: (state) => state.todoItems,
+    getNextId: (state) => state.nextId,
+    getSelectedItemId: (state) => state.selectedItemId,
+    getSelectedItemIndex: (state) => state.selectedItemIndex,
   },
 });
 export const {
-  deleteRow,
-  insertRowBelow,
+  sendAndApplyChange,
   setSelectedItemId,
   setEditingTitle,
   setSelectedTitle,
@@ -318,6 +330,6 @@ export const {
   redo,
 } = todolistSlice.actions;
 
-export const { getSelectedItemId, getSelectedItemIndex, getEditingTitle, getItems } =
+export const { getEditingTitle, getItems, getNextId, getSelectedItemId, getSelectedItemIndex } =
   todolistSlice.selectors;
 export const { load, save } = todolistSlice.actions;
