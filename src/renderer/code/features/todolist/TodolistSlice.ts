@@ -50,6 +50,63 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
   console.log(`Loaded ${items.length} items from ${listName}`);
 };
 
+// Applies a single change to the state. Optionally focuses selection on first added item.
+const applySingleChange = (
+  state: Draft<TodolistSlice>,
+  change: AnyChange,
+  opts?: { focusOnFirstAdded?: boolean },
+): void => {
+  switch (change.type) {
+    case 'addItems': {
+      const itemsWithIndex = change.items;
+      applyAddItems(state.todoItems, itemsWithIndex);
+      // update nextId to be higher than any new item id
+      const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
+      if (maxNewId >= state.nextId) {
+        state.nextId = maxNewId + 1;
+      }
+      // Optionally focus selection on first added item
+      if (opts?.focusOnFirstAdded && itemsWithIndex.length > 0) {
+        const firstId = itemsWithIndex[0].item.id;
+        state.selectedItemId = firstId;
+        state.selectedItemIndex = computeItemIndex(state.todoItems, firstId);
+        state.editingTitle = true;
+      }
+      state.saved = false;
+      break;
+    }
+    case 'deleteItems': {
+      applyDeleteItems(state.todoItems, change.ids);
+      const idsToDelete = new Set(change.ids);
+      const selectedWasDeleted =
+        state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
+      if (selectedWasDeleted) {
+        // Selected item was deleted, update selection
+        if (state.todoItems.length > 0) {
+          state.selectedItemIndex = Math.min(
+            state.selectedItemIndex ?? 0,
+            state.todoItems.length - 1,
+          );
+          state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
+        } else {
+          state.selectedItemId = undefined;
+          state.selectedItemIndex = undefined;
+        }
+        state.editingTitle = false;
+      } else if (state.selectedItemId !== undefined) {
+        // Update selected item index based on current selected item ID
+        state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
+      }
+      state.saved = false;
+      break;
+    }
+    default: {
+      const _exhaustiveCheck: never = change;
+      return _exhaustiveCheck;
+    }
+  }
+};
+
 const applyChanges = (
   state: Draft<TodolistSlice>,
   { payload }: PayloadAction<AnyChange[]>,
@@ -57,49 +114,7 @@ const applyChanges = (
   state.status = 'idle';
   console.log(`Applying ${payload.length} changes`);
   for (const change of payload) {
-    switch (change.type) {
-      case 'addItems': {
-        const itemsWithIndex = change.items;
-        applyAddItems(state.todoItems, itemsWithIndex);
-        // update nextId to be higher than any new item id
-        const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
-        if (maxNewId >= state.nextId) {
-          state.nextId = maxNewId + 1;
-        }
-        state.saved = false;
-        break;
-      }
-      case 'deleteItems': {
-        applyDeleteItems(state.todoItems, change.ids);
-        const idsToDelete = new Set(change.ids);
-        const selectedWasDeleted =
-          state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
-        if (selectedWasDeleted) {
-          // Selected item was deleted, update selection
-          if (state.todoItems.length > 0) {
-            state.selectedItemIndex = Math.min(
-              state.selectedItemIndex ?? 0,
-              state.todoItems.length - 1,
-            );
-            state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
-          } else {
-            state.selectedItemId = undefined;
-            state.selectedItemIndex = undefined;
-          }
-          state.editingTitle = false;
-        } else if (state.selectedItemId !== undefined) {
-          // Update selected item index based on current selected item ID
-          state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
-        }
-        state.saved = false;
-        break;
-      }
-      // Exhaustiveness check (compile-time)
-      default: {
-        const _exhaustiveCheck: never = change;
-        return _exhaustiveCheck;
-      }
-    }
+    applySingleChange(state, change, { focusOnFirstAdded: false });
   }
 };
 
@@ -107,7 +122,6 @@ export const todolistSlice = createAppSlice({
   name: 'todolist',
   initialState, // Initial state
   reducers: (create) => ({
-    // Merge delete/insert into one generic change sender with optimistic apply
     sendAndApplyChange: create.asyncThunk(
       async (payload: AnyChange) => {
         const result = await window.api.applyChange(payload);
@@ -117,55 +131,7 @@ export const todolistSlice = createAppSlice({
         pending: (state, action: { meta: { arg: AnyChange } }) => {
           state.status = 'synching';
           const change = action.meta.arg;
-          switch (change.type) {
-            case 'deleteItems': {
-              // Optimistic local delete
-              applyDeleteItems(state.todoItems, change.ids);
-              const idsToDelete = new Set(change.ids);
-              const selectedWasDeleted =
-                state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
-              if (selectedWasDeleted) {
-                if (state.todoItems.length > 0) {
-                  state.selectedItemIndex = Math.min(
-                    state.selectedItemIndex ?? 0,
-                    state.todoItems.length - 1,
-                  );
-                  state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
-                } else {
-                  state.selectedItemId = undefined;
-                  state.selectedItemIndex = undefined;
-                }
-                state.editingTitle = false;
-              } else if (state.selectedItemId !== undefined) {
-                state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
-              }
-              state.saved = false;
-              break;
-            }
-            case 'addItems': {
-              // Optimistic local add
-              const itemsWithIndex = change.items;
-              applyAddItems(state.todoItems, itemsWithIndex);
-              // update nextId to be higher than any new item id
-              const maxNewId = itemsWithIndex.reduce((m, { item }) => Math.max(m, item.id), 0);
-              if (maxNewId >= state.nextId) {
-                state.nextId = maxNewId + 1;
-              }
-              // Focus selection on first added item
-              if (itemsWithIndex.length > 0) {
-                const firstId = itemsWithIndex[0].item.id;
-                state.selectedItemId = firstId;
-                state.selectedItemIndex = computeItemIndex(state.todoItems, firstId);
-                state.editingTitle = true;
-              }
-              state.saved = false;
-              break;
-            }
-            default: {
-              const _exhaustiveCheck: never = change;
-              return _exhaustiveCheck;
-            }
-          }
+          applySingleChange(state, change, { focusOnFirstAdded: true });
         },
         fulfilled: applyChanges,
         rejected: (state) => {
