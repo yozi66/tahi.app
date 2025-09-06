@@ -3,12 +3,26 @@ import Todolist from './Todolist';
 import { Allotment } from 'allotment';
 import { setSelectedComments } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
+import { useEffect, useState } from 'react';
 
 export default function TodolistSplit(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const tahiState = useAppSelector((state) => state.todolist);
-  const handleInputChange = (value: string): void => {
-    dispatch(setSelectedComments(value));
+  // Local state for comments input to avoid excessive redux updates
+  const selectedIndex = tahiState.selectedItemIndex;
+  const selectedItem = selectedIndex !== undefined ? tahiState.todoItems[selectedIndex] : undefined;
+  const [localComments, setLocalComments] = useState<string>(selectedItem?.comments ?? '');
+
+  // Sync local state when the selected item or its comments change externally
+  useEffect(() => {
+    setLocalComments(selectedItem?.comments ?? '');
+  }, [selectedIndex, selectedItem?.comments]);
+
+  const handleInputBlur = (): void => {
+    if (!selectedItem) return;
+    if ((selectedItem.comments ?? '') !== localComments) {
+      dispatch(setSelectedComments(localComments));
+    }
   };
 
   return (
@@ -23,20 +37,15 @@ export default function TodolistSplit(): React.JSX.Element {
         <Allotment.Pane minSize={65}>
           <Textarea
             label="Task comments"
-            value={
-              tahiState.selectedItemIndex !== undefined &&
-              tahiState.todoItems[tahiState.selectedItemIndex]
-                ? tahiState.todoItems[tahiState.selectedItemIndex].comments
-                : ''
-            }
+            value={localComments}
             styles={{
               root: { height: '100%' },
               input: { height: `calc(100% - 30px)`, resize: 'none' },
               wrapper: { height: '100%' },
             }}
-            onChange={(e) => {
-              handleInputChange(e.target.value);
-            }}
+            disabled={!selectedItem}
+            onChange={(e) => setLocalComments(e.target.value)}
+            onBlur={handleInputBlur}
           />
         </Allotment.Pane>
       </Allotment>
