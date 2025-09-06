@@ -1,5 +1,10 @@
 import { createAppSlice } from '@renderer/app/createAppSlice';
 import { TodoItem } from '@common/types/TodoItem';
+import { Draft } from 'immer';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { AnyChange } from '@common/types/AnyChange';
+
+// State of the todolist feature
 
 export type TodolistSlice = {
   selectedItemId?: number;
@@ -42,6 +47,63 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
   state.saved = true;
   document.title = listName;
   console.log(`Loaded ${items.length} items from ${listName}`);
+};
+
+const applyChanges = (state: Draft<TodolistSlice>, { payload }: PayloadAction<AnyChange[]>) => {
+  state.status = 'idle';
+  console.log(`Applying ${payload.length} changes`);
+  for (const change of payload) {
+    switch (change.type) {
+      case 'addItems': {
+        const itemsWithIndex = change.items;
+        // sort by index to insert in correct order
+        itemsWithIndex.sort((a, b) => a.index - b.index);
+        for (const { item, index } of itemsWithIndex) {
+          if (index < 0 || index > state.todoItems.length) {
+            console.warn(
+              `Index ${index} out of bounds, appending item with id ${item.id} at the end`,
+            );
+            state.todoItems.push(item);
+          } else {
+            state.todoItems.splice(index, 0, item);
+          }
+          if (item.id >= state.nextId) {
+            state.nextId = item.id + 1;
+          }
+        }
+        state.saved = false;
+        break;
+      }
+      case 'deleteItems': {
+        const idsToDelete = new Set(change.ids);
+        state.todoItems = state.todoItems.filter((item) => !idsToDelete.has(item.id));
+        if (state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId)) {
+          // Selected item was deleted, update selection
+          if (state.todoItems.length > 0) {
+            state.selectedItemIndex = Math.min(
+              state.selectedItemIndex ?? 0,
+              state.todoItems.length - 1,
+            );
+            state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
+          } else {
+            state.selectedItemId = undefined;
+            state.selectedItemIndex = undefined;
+          }
+          state.editingTitle = false;
+        } else if (state.selectedItemId !== undefined) {
+          // Update selected item index based on current selected item ID
+          state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
+        }
+        state.saved = false;
+        break;
+      }
+      // Exhaustiveness check (compile-time)
+      default: {
+        const _exhaustiveCheck: never = change;
+        return _exhaustiveCheck;
+      }
+    }
+  }
 };
 
 export const todolistSlice = createAppSlice({
@@ -205,6 +267,40 @@ export const todolistSlice = createAppSlice({
         state.saved = false;
       }
     }),
+    undo: create.asyncThunk(
+      async () => {
+        const result = await window.api.undo();
+        return result; // AnyChange[] - changes to apply
+      },
+      {
+        pending: (state) => {
+          state.status = 'synching';
+          console.log('Undoing...');
+        },
+        fulfilled: applyChanges,
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Undo failed');
+        },
+      },
+    ),
+    redo: create.asyncThunk(
+      async () => {
+        const result = await window.api.redo();
+        return result; // AnyChange[] - changes to apply
+      },
+      {
+        pending: (state) => {
+          state.status = 'synching';
+          console.log('Redoing...');
+        },
+        fulfilled: applyChanges,
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Redo failed');
+        },
+      },
+    ),
   }),
   selectors: {
     getSelectedItemId: (state) => state.selectedItemId,
@@ -221,6 +317,8 @@ export const {
   setSelectedTitle,
   setSelectedComments,
   toggleDone,
+  undo,
+  redo,
 } = todolistSlice.actions;
 
 export const { getSelectedItemId, getSelectedItemIndex, getEditingTitle, getItems } =

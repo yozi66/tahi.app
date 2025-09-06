@@ -18,6 +18,8 @@ const api = {
     });
   },
   applyChange: (change: AnyChange) => ipcRenderer.invoke('apply-change', change),
+  undo: () => ipcRenderer.invoke('undo'),
+  redo: () => ipcRenderer.invoke('redo'),
   /* planned extension:
   onPushChanges: (callback: (changes: AnyChange[]) => void) => {
     ipcRenderer.on('push-change', (_event, changes: AnyChange[]) => {

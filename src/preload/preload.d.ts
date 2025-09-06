@@ -10,6 +10,8 @@ interface TahiApi {
   get_list: () => Promise<TodoItem[]>;
   onPushList: (callback: (listName: string, todoList: TodoItem[]) => void) => void;
   applyChange: (change: AnyChange) => Promise<AnyChange[]>;
+  undo: () => Promise<AnyChange[]>;
+  redo: () => Promise<AnyChange[]>;
   /* planned extension:
   onPushChanges: (callback: (changes: AnyChange[]) => void) => void;
   */

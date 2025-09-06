@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { sampleList } from '@main/state/sampleListState';
-import { MainState, applyChange } from '@main/state/MainState';
+import { MainState } from '@main/state/MainState';
 import { loadTodoList, saveTodoList, saveTodoListAs } from '@main/repository/TodoListRepository';
 
 export function setupIpcHandlers(mainState: MainState): void {
@@ -28,6 +28,14 @@ export function setupIpcHandlers(mainState: MainState): void {
   ipcMain.handle('apply-change', async (_event, change) => {
     void _event; // make eslint ignore the unused _event parameter
     console.log('Received change:', change.type);
-    return applyChange(mainState, change);
+    return mainState.applyChange(change);
+  });
+
+  ipcMain.handle('undo', async () => {
+    return mainState.undo();
+  });
+
+  ipcMain.handle('redo', async () => {
+    return mainState.redo();
   });
 }

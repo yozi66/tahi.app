@@ -14,8 +14,12 @@ import {
   insertRowBelow,
   load,
   save,
+  undo,
+  redo,
 } from '@renderer/features/todolist/TodolistSlice';
 import {
+  IconArrowBackUp,
+  IconArrowForwardUp,
   IconDeviceFloppy,
   IconFilePencil,
   IconFolderOpen,
@@ -101,6 +105,28 @@ export function TahiHeader(): React.JSX.Element {
           <IconTrashX size={20} />
         </ActionIcon>
       </Tooltip>
+      <Tooltip label="Undo" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Undo"
+          onClick={() => dispatch(undo())}
+        >
+          <IconArrowBackUp size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Redo" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Redo"
+          onClick={() => dispatch(redo())}
+        >
+          <IconArrowForwardUp size={20} />
+        </ActionIcon>
+      </Tooltip>{' '}
     </Group>
   );
 }

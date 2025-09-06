@@ -26,7 +26,7 @@ export default tseslint.config(
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactRefresh.configs.vite.rules,
       'no-restricted-imports': [
-        2,
+        'error',
         {
           paths: [
             {
@@ -35,6 +35,16 @@ export default tseslint.config(
               message: 'Please use pre-typed versions from `src/app/hooks.ts` instead.',
             },
           ],
+        },
+      ],
+      // 🔒 Require underscore prefix for all private class members
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'memberLike',
+          modifiers: ['private'],
+          format: ['camelCase'],
+          leadingUnderscore: 'require',
         },
       ],
     },
