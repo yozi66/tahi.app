@@ -1,7 +1,7 @@
 // runtime state of the app
 import { BrowserWindow } from 'electron';
 import { AnyChange } from '@common/types/AnyChange';
-import { TodoList, deleteItems } from '@main/state/TodoList';
+import { TodoList } from '@main/state/TodoList';
 
 export type MainSettings = {
   filepath?: string;
@@ -33,7 +33,7 @@ export class MainState {
 export const applyChange = (state: MainState, change: AnyChange): AnyChange[] => {
   switch (change.type) {
     case 'deleteItems':
-      return deleteItems(state.mainList, change.ids);
+      return state.mainList.deleteItems(change.ids);
     default:
       console.warn(`Unknown change type: ${change.type}`);
       return [];

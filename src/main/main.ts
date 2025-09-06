@@ -50,7 +50,7 @@ function createMainWindow(): MainState {
 
   mainWindow.webContents.on('did-finish-load', () => {
     console.log(
-      `did-finish-load: sending ${mainState.mainSettings.filepath} with ${mainState.mainList.items.length} items`,
+      `did-finish-load: sending ${mainState.mainSettings.filepath} with ${mainState.mainList.itemCount} items`,
     );
     mainWindow.webContents.send(
       'push-list',
@@ -106,7 +106,7 @@ app.whenReady().then(async () => {
   if (mainState.mainSettings.filepath) {
     loadTodoListFromPath(mainState.mainSettings.filepath).then(({ success, items }): void => {
       if (success && items) {
-        mainState.mainList.items = items;
+        mainState.mainList.setAllItems(items, { saved: true });
       }
     });
   }
