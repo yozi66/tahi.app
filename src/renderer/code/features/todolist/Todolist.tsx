@@ -75,7 +75,10 @@ export default function Todolist(): React.JSX.Element {
     (record: TodoItem, value: string) => {
       if (!tahiState.editingTitle) return;
       if (record.id !== tahiState.selectedItemId) return;
-      dispatch(updateItem({ id: record.id, newData: { title: value } }));
+      // Commit the change if it is different from the original title
+      if ((record.title ?? '') !== value) {
+        dispatch(updateItem({ id: record.id, newData: { title: value } }));
+      }
       clearTitleBuffer(record.id);
     },
     [dispatch, clearTitleBuffer, tahiState.editingTitle, tahiState.selectedItemId],
