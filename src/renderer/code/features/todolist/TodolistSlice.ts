@@ -212,13 +212,33 @@ export const todolistSlice = createAppSlice({
       state.selectedItemId = action.payload;
       state.selectedItemIndex = computeItemIndex(state.todoItems, action.payload);
     }),
-    setSelectedTitle: create.reducer((state, action: { payload: string }) => {
-      const selectedItemIndex = state.selectedItemIndex;
-      if (selectedItemIndex !== undefined) {
-        state.todoItems[selectedItemIndex].title = action.payload;
-        state.saved = false;
-      }
-    }),
+    updateItem: create.asyncThunk(
+      async (payload: { id: number; newData: Partial<TodoItem> }) => {
+        const change: AnyChange = {
+          type: 'updateItem',
+          id: payload.id,
+          newData: payload.newData,
+        };
+        const result = await window.api.applyChange(change);
+        return result; // AnyChange[] - further changes to apply
+      },
+      {
+        pending: (state, action: { meta: { arg: { id: number; newData: Partial<TodoItem> } } }) => {
+          state.status = 'synching';
+          const { id, newData } = action.meta.arg;
+          applySingleChange(
+            state,
+            { type: 'updateItem', id, newData },
+            { focusOnFirstAdded: false },
+          );
+        },
+        fulfilled: applyChanges,
+        rejected: (state) => {
+          state.status = 'failed';
+          console.error('Change failed');
+        },
+      },
+    ),
     setSelectedComments: create.reducer((state, action: { payload: string }) => {
       const selectedItemIndex = state.selectedItemIndex;
       if (selectedItemIndex === undefined) {
@@ -299,6 +319,7 @@ export const todolistSlice = createAppSlice({
 });
 export const {
   sendAndApplyChange,
+  updateItem,
   setSelectedItemId,
   setEditingTitle,
   setSelectedTitle,

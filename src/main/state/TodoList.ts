@@ -49,10 +49,14 @@ export class TodoList {
     };
     return { undo: undoChange, effects: [] };
   }
-  updateItem(id: number, newData: Partial<TodoItem>): {
+  updateItem(
+    id: number,
+    newData: Partial<TodoItem>,
+  ): {
     undo: AnyChange | undefined;
     effects: AnyChange[];
   } {
+    console.log(`Updating item ${id} with data:`, newData);
     const { previous } = applyUpdateItem(this._items, id, newData);
     if (!previous) {
       // nothing changed or item not found

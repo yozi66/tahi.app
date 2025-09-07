@@ -6,7 +6,7 @@ import { Text } from '@mantine/core';
 import { memo, useCallback } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
-import { setSelectedItemId, setEditingTitle, setSelectedTitle, toggleDone } from './TodolistSlice';
+import { setSelectedItemId, setEditingTitle, updateItem, toggleDone } from './TodolistSlice';
 import { useTodolistUIStore } from './useTodolistUIStore';
 
 // A focused cell component that subscribes only to its own local title buffer
@@ -75,7 +75,7 @@ export default function Todolist(): React.JSX.Element {
     (record: TodoItem, value: string) => {
       if (!tahiState.editingTitle) return;
       if (record.id !== tahiState.selectedItemId) return;
-      dispatch(setSelectedTitle(value));
+      dispatch(updateItem({ id: record.id, newData: { title: value } }));
       clearTitleBuffer(record.id);
     },
     [dispatch, clearTitleBuffer, tahiState.editingTitle, tahiState.selectedItemId],
