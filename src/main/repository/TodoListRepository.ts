@@ -87,6 +87,7 @@ export const loadTodoList = async (
   const answer = await loadTodoListFromPath(filepath);
   if (answer.success) {
     mainState.mainSettings.filepath = filepath;
+    mainState.setAllItems(answer.items ?? [], { saved: true, resetHistory: true });
   }
   return answer;
 };

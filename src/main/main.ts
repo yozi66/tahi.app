@@ -102,7 +102,7 @@ app.whenReady().then(async () => {
   if (mainState.mainSettings.filepath) {
     loadTodoListFromPath(mainState.mainSettings.filepath).then(({ success, items }): void => {
       if (success && items) {
-        mainState.setAllItems(items, { saved: true });
+        mainState.setAllItems(items, { saved: true, resetHistory: true });
       }
     });
   }

@@ -42,6 +42,12 @@ class UndoRedoHistory {
     }
     return [next, ...effects];
   }
+
+  reset(): void {
+    console.log('Resetting undo/redo history');
+    this._past = [];
+    this._future = [];
+  }
 }
 
 export type MainSettings = {
@@ -71,8 +77,11 @@ export class MainState {
   get items(): ReadonlyArray<TodoItem> {
     return this._mainList.items;
   }
-  setAllItems(newItems: TodoItem[], options: { saved: boolean }): void {
+  setAllItems(newItems: TodoItem[], options: { saved: boolean; resetHistory: boolean }): void {
     this._mainList.setAllItems(newItems, options);
+    if (options.resetHistory) {
+      this._history.reset();
+    }
   }
   private _exec: ChangeExecutor = (change: AnyChange) => {
     switch (change.type) {
