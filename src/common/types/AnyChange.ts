@@ -14,4 +14,10 @@ export interface DeleteItemsChange extends Change {
   ids: number[];
 }
 
-export type AnyChange = AddItemsChange | DeleteItemsChange;
+export interface UpdateItemChange extends Change {
+  type: 'updateItem';
+  id: number;
+  newData: Partial<TodoItem>;
+}
+
+export type AnyChange = AddItemsChange | DeleteItemsChange | UpdateItemChange;

@@ -1,6 +1,6 @@
 import { TodoItem } from '@common/types/TodoItem';
 import { AnyChange } from '@common/types/AnyChange';
-import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
+import { applyAddItems, applyDeleteItems, applyUpdateItem } from '@common/util/ApplyUtils';
 
 export class TodoList {
   constructor(
@@ -46,6 +46,23 @@ export class TodoList {
     const undoChange: AnyChange = {
       type: 'deleteItems',
       ids: itemsWithIndex.map(({ item }) => item.id),
+    };
+    return { undo: undoChange, effects: [] };
+  }
+  updateItem(id: number, newData: Partial<TodoItem>): {
+    undo: AnyChange | undefined;
+    effects: AnyChange[];
+  } {
+    const { previous } = applyUpdateItem(this._items, id, newData);
+    if (!previous) {
+      // nothing changed or item not found
+      return { undo: undefined, effects: [] };
+    }
+    this._saved = false;
+    const undoChange: AnyChange = {
+      type: 'updateItem',
+      id,
+      newData: previous,
     };
     return { undo: undoChange, effects: [] };
   }

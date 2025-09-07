@@ -80,6 +80,8 @@ export class MainState {
         return this._mainList.addItems(change.items);
       case 'deleteItems':
         return this._mainList.deleteItems(change.ids);
+      case 'updateItem':
+        return this._mainList.updateItem(change.id, change.newData);
       default: {
         const _exhaustiveCheck: never = change;
         return _exhaustiveCheck;

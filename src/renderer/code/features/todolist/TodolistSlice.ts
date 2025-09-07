@@ -100,6 +100,18 @@ const applySingleChange = (
       state.saved = false;
       break;
     }
+    case 'updateItem': {
+      const idx = state.todoItems.findIndex((it) => it.id === change.id);
+      if (idx !== -1) {
+        const item = state.todoItems[idx];
+        const patch = change.newData;
+        if (patch.title !== undefined) item.title = patch.title;
+        if (patch.comments !== undefined) item.comments = patch.comments;
+        if (patch.done !== undefined) item.done = patch.done;
+        state.saved = false;
+      }
+      break;
+    }
     default: {
       const _exhaustiveCheck: never = change;
       return _exhaustiveCheck;

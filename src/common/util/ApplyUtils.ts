@@ -77,3 +77,39 @@ export const applyDeleteItems = (
   if (write < items.length) items.length = write;
   return { removed };
 };
+
+// Applies a partial update to a single item by id. Returns the previous values
+// for the fields that were updated so an undo change can be built easily.
+export const applyUpdateItem = (
+  items: Draft<TodoItem[]>,
+  id: number,
+  newData: Partial<TodoItem>,
+): { previous?: Partial<TodoItem> } => {
+  if (!newData || Object.keys(newData).length === 0) {
+    return { previous: undefined };
+  }
+  const idx = items.findIndex((it) => it.id === id);
+  if (idx === -1) {
+    console.warn(`applyUpdateItem: item ${id} not found`);
+    return { previous: undefined };
+  }
+  const target = items[idx];
+  const previous: Partial<TodoItem> = {};
+  // Only allow updates to mutable fields; id is immutable
+  if (newData.title !== undefined && target.title !== newData.title) {
+    previous.title = target.title;
+    target.title = newData.title;
+  }
+  if (newData.comments !== undefined && target.comments !== newData.comments) {
+    previous.comments = target.comments;
+    target.comments = newData.comments;
+  }
+  if (newData.done !== undefined && target.done !== newData.done) {
+    previous.done = target.done;
+    target.done = newData.done;
+  }
+  if (Object.keys(previous).length === 0) {
+    return { previous: undefined };
+  }
+  return { previous };
+};
