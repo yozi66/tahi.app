@@ -3,25 +3,67 @@ import Todolist from './Todolist';
 import { Allotment } from 'allotment';
 import { setSelectedComments } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useTodolistUIStore } from './useTodolistUIStore';
+import { TodoItem } from '@common/types/TodoItem';
+
+function CommentsEditor({
+  selectedItem,
+  onCommit,
+}: {
+  selectedItem?: TodoItem;
+  onCommit: (value: string) => void;
+}): React.JSX.Element {
+  const commentsValue = useTodolistUIStore(
+    (s) => (selectedItem ? s.comments[selectedItem.id] : undefined),
+    (a, b) => a === b,
+  );
+  const initComments = useTodolistUIStore((s) => s.initComments);
+  const setComments = useTodolistUIStore((s) => s.setComments);
+  const clearComments = useTodolistUIStore((s) => s.clearComments);
+
+  useEffect(() => {
+    if (selectedItem) {
+      initComments(selectedItem.id, selectedItem.comments ?? '');
+    }
+  }, [selectedItem?.id, selectedItem?.comments, initComments]);
+
+  const commit = (): void => {
+    if (!selectedItem) return;
+    const current = commentsValue ?? selectedItem.comments ?? '';
+    onCommit(current);
+    clearComments(selectedItem.id);
+  };
+
+  return (
+    <Textarea
+      label="Task comments"
+      value={commentsValue ?? selectedItem?.comments ?? ''}
+      styles={{
+        root: { height: '100%' },
+        input: { height: `calc(100% - 30px)`, resize: 'none' },
+        wrapper: { height: '100%' },
+      }}
+      disabled={!selectedItem}
+      onChange={(e) => selectedItem && setComments(selectedItem.id, e.target.value)}
+      onBlur={commit}
+    />
+  );
+}
 
 export default function TodolistSplit(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const tahiState = useAppSelector((state) => state.todolist);
-  // Local state for comments input to avoid excessive redux updates
   const selectedIndex = tahiState.selectedItemIndex;
-  const selectedItem = selectedIndex !== undefined ? tahiState.todoItems[selectedIndex] : undefined;
-  const [localComments, setLocalComments] = useState<string>(selectedItem?.comments ?? '');
+  const selectedItem = useMemo(
+    () => (selectedIndex !== undefined ? tahiState.todoItems[selectedIndex] : undefined),
+    [selectedIndex, tahiState.todoItems],
+  );
 
-  // Sync local state when the selected item or its comments change externally
-  useEffect(() => {
-    setLocalComments(selectedItem?.comments ?? '');
-  }, [selectedIndex, selectedItem?.comments]);
-
-  const handleInputBlur = (): void => {
+  const handleCommit = (value: string): void => {
     if (!selectedItem) return;
-    if ((selectedItem.comments ?? '') !== localComments) {
-      dispatch(setSelectedComments(localComments));
+    if ((selectedItem.comments ?? '') !== value) {
+      dispatch(setSelectedComments(value));
     }
   };
 
@@ -35,18 +77,7 @@ export default function TodolistSplit(): React.JSX.Element {
           <Todolist />
         </Allotment.Pane>
         <Allotment.Pane minSize={65}>
-          <Textarea
-            label="Task comments"
-            value={localComments}
-            styles={{
-              root: { height: '100%' },
-              input: { height: `calc(100% - 30px)`, resize: 'none' },
-              wrapper: { height: '100%' },
-            }}
-            disabled={!selectedItem}
-            onChange={(e) => setLocalComments(e.target.value)}
-            onBlur={handleInputBlur}
-          />
+          <CommentsEditor selectedItem={selectedItem} onCommit={handleCommit} />
         </Allotment.Pane>
       </Allotment>
     </Box>
