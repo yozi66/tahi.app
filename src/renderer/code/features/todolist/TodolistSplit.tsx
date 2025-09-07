@@ -22,17 +22,20 @@ function CommentsEditor({
   const setComments = useTodolistUIStore((s) => s.setComments);
   const clearComments = useTodolistUIStore((s) => s.clearComments);
 
+  const itemId = selectedItem?.id;
+  const initialComments = selectedItem?.comments ?? '';
+
   useEffect(() => {
-    if (selectedItem) {
-      initComments(selectedItem.id, selectedItem.comments ?? '');
+    if (itemId !== undefined) {
+      initComments(itemId, initialComments);
     }
-  }, [selectedItem?.id, selectedItem?.comments, initComments]);
+  }, [itemId, initialComments, initComments]);
 
   const commit = (): void => {
-    if (!selectedItem) return;
-    const current = commentsValue ?? selectedItem.comments ?? '';
+    if (itemId === undefined) return;
+    const current = commentsValue ?? initialComments;
     onCommit(current);
-    clearComments(selectedItem.id);
+    clearComments(itemId);
   };
 
   return (
@@ -44,8 +47,8 @@ function CommentsEditor({
         input: { height: `calc(100% - 30px)`, resize: 'none' },
         wrapper: { height: '100%' },
       }}
-      disabled={!selectedItem}
-      onChange={(e) => selectedItem && setComments(selectedItem.id, e.target.value)}
+      disabled={itemId === undefined}
+      onChange={(e) => itemId !== undefined && setComments(itemId, e.target.value)}
       onBlur={commit}
     />
   );
