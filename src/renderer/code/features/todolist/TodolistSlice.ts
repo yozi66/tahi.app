@@ -239,19 +239,6 @@ export const todolistSlice = createAppSlice({
         },
       },
     ),
-    setSelectedComments: create.reducer((state, action: { payload: string }) => {
-      const selectedItemIndex = state.selectedItemIndex;
-      if (selectedItemIndex === undefined) {
-        return;
-      }
-      const selectedItem = state.todoItems[selectedItemIndex];
-      if (selectedItem === undefined) {
-        return;
-      }
-      selectedItem.comments = action.payload;
-      state.editingTitle = false; // Exit title edit mode when editing comments
-      state.saved = false;
-    }),
     setTodoItems: create.reducer(
       (state, action: { payload: { listName: string; items: TodoItem[] } }) => {
         loadItems(state, action.payload.listName, action.payload.items);
@@ -322,7 +309,6 @@ export const {
   updateItem,
   setSelectedItemId,
   setEditingTitle,
-  setSelectedComments,
   toggleDone,
   undo,
   redo,

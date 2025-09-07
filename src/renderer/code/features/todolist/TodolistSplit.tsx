@@ -1,7 +1,7 @@
 import { Box, Textarea } from '@mantine/core';
 import Todolist from './Todolist';
 import { Allotment } from 'allotment';
-import { setSelectedComments } from './TodolistSlice';
+import { updateItem } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import { useEffect, useMemo } from 'react';
 import { useTodolistUIStore } from './useTodolistUIStore';
@@ -66,7 +66,7 @@ export default function TodolistSplit(): React.JSX.Element {
   const handleCommit = (value: string): void => {
     if (!selectedItem) return;
     if ((selectedItem.comments ?? '') !== value) {
-      dispatch(setSelectedComments(value));
+      dispatch(updateItem({ id: selectedItem.id, newData: { comments: value } }));
     }
   };
 
