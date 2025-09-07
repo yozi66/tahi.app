@@ -322,7 +322,6 @@ export const {
   updateItem,
   setSelectedItemId,
   setEditingTitle,
-  setSelectedTitle,
   setSelectedComments,
   toggleDone,
   undo,
