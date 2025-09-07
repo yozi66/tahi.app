@@ -6,7 +6,7 @@ import { Text } from '@mantine/core';
 import { memo, useCallback } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
-import { setSelectedItemId, setEditingTitle, updateItem, toggleDone } from './TodolistSlice';
+import { setSelectedItemId, setEditingTitle, updateItem } from './TodolistSlice';
 import { useTodolistUIStore } from './useTodolistUIStore';
 
 // A focused cell component that subscribes only to its own local title buffer
@@ -67,7 +67,7 @@ export default function Todolist(): React.JSX.Element {
 
     // If the done checkbox is clicked, toggle the done state of the item.
     if (column.accessor === 'done') {
-      dispatch(toggleDone(record.id));
+      dispatch(updateItem({ id: record.id, newData: { done: !record.done } }));
     }
   };
   const clearTitleBuffer = useTodolistUIStore((s) => s.clearTitle);

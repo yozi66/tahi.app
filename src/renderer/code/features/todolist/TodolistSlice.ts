@@ -244,23 +244,6 @@ export const todolistSlice = createAppSlice({
         loadItems(state, action.payload.listName, action.payload.items);
       },
     ),
-    toggleDone: create.reducer((state, action: { payload: number }) => {
-      if (state.selectedItemId !== action.payload) {
-        state.selectedItemId = action.payload;
-        // Update the selected item index based on the new selected item ID
-        state.selectedItemIndex = computeItemIndex(state.todoItems, action.payload);
-      }
-      const selectedItemIndex = state.selectedItemIndex;
-      state.editingTitle = false;
-      if (selectedItemIndex !== undefined) {
-        // Toggle the done status of the selected item
-        const item = state.todoItems[selectedItemIndex];
-        if (item) {
-          item.done = !item.done;
-        }
-        state.saved = false;
-      }
-    }),
     undo: create.asyncThunk(
       async () => {
         const result = await window.api.undo();
@@ -304,15 +287,8 @@ export const todolistSlice = createAppSlice({
     getSelectedItemIndex: (state) => state.selectedItemIndex,
   },
 });
-export const {
-  sendAndApplyChange,
-  updateItem,
-  setSelectedItemId,
-  setEditingTitle,
-  toggleDone,
-  undo,
-  redo,
-} = todolistSlice.actions;
+export const { sendAndApplyChange, updateItem, setSelectedItemId, setEditingTitle, undo, redo } =
+  todolistSlice.actions;
 
 export const { getEditingTitle, getItems, getNextId, getSelectedItemId, getSelectedItemIndex } =
   todolistSlice.selectors;
