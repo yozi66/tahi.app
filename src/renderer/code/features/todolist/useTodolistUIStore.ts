@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { immer } from 'zustand/middleware/immer';
 
 type TitlesMap = Record<number, string>;
@@ -17,7 +17,7 @@ type TodolistUIState = {
   clearComments: (id: number) => void;
 };
 
-export const useTodolistUIStore = create<TodolistUIState>()(
+export const useTodolistUIStore = createWithEqualityFn<TodolistUIState>()(
   immer((set) => ({
     titles: {},
     comments: {},
