@@ -43,6 +43,14 @@ class UndoRedoHistory {
     return [next, ...effects];
   }
 
+  canUndo(): boolean {
+    return this._past.length > 0;
+  }
+
+  canRedo(): boolean {
+    return this._future.length > 0;
+  }
+
   reset(): void {
     console.log('Resetting undo/redo history');
     this._past = [];
@@ -105,5 +113,11 @@ export class MainState {
   }
   redo(): AnyChange[] {
     return this._history.redo(this._exec);
+  }
+  undoRedoStatus(): { canUndo: boolean; canRedo: boolean } {
+    return {
+      canUndo: this._history.canUndo(),
+      canRedo: this._history.canRedo(),
+    };
   }
 }
