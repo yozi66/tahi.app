@@ -29,6 +29,11 @@ import {
   IconTrashX,
 } from '@renderer/components/TahiIcons';
 
+const disabledActionIconStyle: React.CSSProperties = {
+  '--mantine-color-disabled': 'transparent',
+  '--mantine-color-disabled-color': 'rgba(255, 255, 255, 0.45)',
+};
+
 export function TahiHeader(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const mobileOpened = useAppSelector(selectMobileOpened);
@@ -156,9 +161,11 @@ export function TahiHeader(): React.JSX.Element {
       <Tooltip label="Undo" withArrow>
         <ActionIcon
           variant="subtle"
-          color={canUndo ? 'blue' : 'gray'}
+          color="blue"
           size="sm"
           aria-label="Undo"
+          disabled={!canUndo}
+          style={!canRedo ? disabledActionIconStyle : undefined}
           onClick={() => {
             if (canUndo) {
               void dispatch(undo());
@@ -171,9 +178,11 @@ export function TahiHeader(): React.JSX.Element {
       <Tooltip label="Redo" withArrow>
         <ActionIcon
           variant="subtle"
-          color={canRedo ? 'blue' : 'gray'}
+          color="blue"
           size="sm"
           aria-label="Redo"
+          disabled={!canRedo}
+          style={!canRedo ? disabledActionIconStyle : undefined}
           onClick={() => {
             if (canRedo) {
               void dispatch(redo());
