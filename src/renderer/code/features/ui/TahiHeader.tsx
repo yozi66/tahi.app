@@ -37,6 +37,30 @@ export function TahiHeader(): React.JSX.Element {
   const selectedItemId = useAppSelector(getSelectedItemId);
   const selectedItemIndex = useAppSelector(getSelectedItemIndex);
   const nextId = useAppSelector(getNextId);
+  const [canUndo, setCanUndo] = React.useState(false);
+  const [canRedo, setCanRedo] = React.useState(false);
+
+  React.useEffect(() => {
+    let mounted = true;
+    void window.api
+      .undoRedoStatus()
+      .then(({ canUndo: undoAvailable, canRedo: redoAvailable }) => {
+        if (mounted) {
+          setCanUndo(undoAvailable);
+          setCanRedo(redoAvailable);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to fetch undo/redo status', err);
+        if (mounted) {
+          setCanUndo(false);
+          setCanRedo(false);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [items]);
 
   return (
     <Group h="100%" px="md">
@@ -132,10 +156,15 @@ export function TahiHeader(): React.JSX.Element {
       <Tooltip label="Undo" withArrow>
         <ActionIcon
           variant="subtle"
-          color="blue"
+          color={canUndo ? 'blue' : 'gray'}
           size="sm"
           aria-label="Undo"
-          onClick={() => dispatch(undo())}
+          disabled={!canUndo}
+          onClick={() => {
+            if (canUndo) {
+              void dispatch(undo());
+            }
+          }}
         >
           <IconArrowBackUp size={20} />
         </ActionIcon>
@@ -143,10 +172,15 @@ export function TahiHeader(): React.JSX.Element {
       <Tooltip label="Redo" withArrow>
         <ActionIcon
           variant="subtle"
-          color="blue"
+          color={canRedo ? 'blue' : 'gray'}
           size="sm"
           aria-label="Redo"
-          onClick={() => dispatch(redo())}
+          disabled={!canRedo}
+          onClick={() => {
+            if (canRedo) {
+              void dispatch(redo());
+            }
+          }}
         >
           <IconArrowForwardUp size={20} />
         </ActionIcon>
