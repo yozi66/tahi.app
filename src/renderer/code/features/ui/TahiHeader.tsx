@@ -159,7 +159,6 @@ export function TahiHeader(): React.JSX.Element {
           color={canUndo ? 'blue' : 'gray'}
           size="sm"
           aria-label="Undo"
-          disabled={!canUndo}
           onClick={() => {
             if (canUndo) {
               void dispatch(undo());
@@ -175,7 +174,6 @@ export function TahiHeader(): React.JSX.Element {
           color={canRedo ? 'blue' : 'gray'}
           size="sm"
           aria-label="Redo"
-          disabled={!canRedo}
           onClick={() => {
             if (canRedo) {
               void dispatch(redo());

@@ -44,7 +44,7 @@ function createMainWindow(): MainState {
     mainWindow.show();
     if (devtoolsInProduction || process.env.NODE_ENV === 'development') {
       console.log('Development mode: opening DevTools');
-      mainWindow.webContents.openDevTools();
+      mainWindow.webContents.openDevTools({mode: 'detach' });
     }
   });
 
