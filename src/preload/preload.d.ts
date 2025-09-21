@@ -12,9 +12,7 @@ interface TahiApi {
   applyChange: (change: AnyChange) => Promise<AnyChange[]>;
   undo: () => Promise<AnyChange[]>;
   redo: () => Promise<AnyChange[]>;
-  /* planned extension:
-  onPushChanges: (callback: (changes: AnyChange[]) => void) => void;
-  */
+  onPushChanges: (callback: (changes: AnyChange[]) => void) => () => void;
 }
 
 declare global {

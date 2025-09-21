@@ -130,15 +130,19 @@ const applySingleChange = (
   }
 };
 
+const applyChangeBatch = (state: Draft<TodolistSlice>, changes: AnyChange[]): void => {
+  console.log(`Applying ${changes.length} changes`);
+  for (const change of changes) {
+    applySingleChange(state, change, { focusOnFirstAdded: false });
+  }
+};
+
 const applyChanges = (
   state: Draft<TodolistSlice>,
   { payload }: PayloadAction<AnyChange[]>,
 ): void => {
   state.status = 'idle';
-  console.log(`Applying ${payload.length} changes`);
-  for (const change of payload) {
-    applySingleChange(state, change, { focusOnFirstAdded: false });
-  }
+  applyChangeBatch(state, payload);
 };
 
 export const todolistSlice = createAppSlice({
@@ -289,6 +293,9 @@ export const todolistSlice = createAppSlice({
         },
       },
     ),
+    applyRemoteChanges: create.reducer((state, action: { payload: AnyChange[] }) => {
+      applyChangeBatch(state, action.payload);
+    }),
   }),
   selectors: {
     getEditingTitle: (state) => state.editingTitle,
@@ -300,8 +307,15 @@ export const todolistSlice = createAppSlice({
     getCanRedo: (state) => state.canRedo,
   },
 });
-export const { sendAndApplyChange, updateItem, setSelectedItemId, setEditingTitle, undo, redo } =
-  todolistSlice.actions;
+export const {
+  sendAndApplyChange,
+  updateItem,
+  setSelectedItemId,
+  setEditingTitle,
+  undo,
+  redo,
+  applyRemoteChanges,
+} = todolistSlice.actions;
 
 export const {
   getEditingTitle,
@@ -312,4 +326,5 @@ export const {
   getCanUndo,
   getCanRedo,
 } = todolistSlice.selectors;
+
 export const { load, save } = todolistSlice.actions;

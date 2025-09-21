@@ -20,13 +20,15 @@ const api = {
   applyChange: (change: AnyChange) => ipcRenderer.invoke('apply-change', change),
   undo: () => ipcRenderer.invoke('undo'),
   redo: () => ipcRenderer.invoke('redo'),
-  /* planned extension:
   onPushChanges: (callback: (changes: AnyChange[]) => void) => {
-    ipcRenderer.on('push-change', (_event, changes: AnyChange[]) => {
+    const listener = (_event: unknown, changes: AnyChange[]): void => {
       callback(changes);
-    });
+    };
+    ipcRenderer.on('push-change', listener);
+    return () => {
+      ipcRenderer.removeListener('push-change', listener);
+    };
   },
-  */
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

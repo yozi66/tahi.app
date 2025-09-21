@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron';
 import { AnyChange } from '@common/types/AnyChange';
 import { TodoList } from '@main/state/TodoList';
 import { TodoItem } from '@common/types/TodoItem';
+import { ChangeDistributor } from '@main/state/ChangeDistributor';
 
 type ChangeExecutor = (change: AnyChange) => { undo?: AnyChange; effects: AnyChange[] };
 
@@ -73,14 +74,58 @@ export class MainState {
     private _mainWindow: BrowserWindow,
     private _mainList: TodoList,
     private _mainSettings: MainSettings,
-  ) {}
+  ) {
+    this._registerWindow(this._mainWindow);
+  }
   private _history = new UndoRedoHistory();
+  private _changeDistributor = new ChangeDistributor();
+  private _windows = new Map<number, BrowserWindow>();
   private _currentUndoRedoStatusChange(): AnyChange {
     return {
       type: 'setUndoRedoStatus',
       canUndo: this._history.canUndo(),
       canRedo: this._history.canRedo(),
     };
+  }
+
+  private _registerWindow(window: BrowserWindow): void {
+    const windowId = window.id;
+    this._windows.set(windowId, window);
+    this._changeDistributor.register(windowId);
+    window.on('closed', () => {
+      this.removeWindow(windowId);
+    });
+  }
+
+  private _dispatchQueuedChanges(): void {
+    const toRemove: number[] = [];
+    for (const [windowId, window] of this._windows.entries()) {
+      if (window.isDestroyed()) {
+        toRemove.push(windowId);
+        continue;
+      }
+      const pending = this._changeDistributor.drain(windowId);
+      if (pending.length === 0) {
+        continue;
+      }
+      console.log(`Dispatching ${pending.length} changes to window ${windowId}`);
+      window.webContents.send('push-change', pending);
+    }
+    if (toRemove.length > 0) {
+      for (const windowId of toRemove) {
+        this._windows.delete(windowId);
+        this._changeDistributor.unregister(windowId);
+      }
+    }
+  }
+
+  private _queueAndDispatch(changes: AnyChange[], sourceWindowId?: number): void {
+    console.log(`queueAndDispatch: ${changes.length} changes from window ${sourceWindowId}`);
+    if (changes.length === 0) {
+      return;
+    }
+    this._changeDistributor.enqueueForObservers(changes, sourceWindowId);
+    this._dispatchQueuedChanges();
   }
 
   get mainWindow(): BrowserWindow {
@@ -115,16 +160,36 @@ export class MainState {
       }
     }
   };
-  applyChange(change: AnyChange): AnyChange[] {
+  applyChange(change: AnyChange, sourceWindowId: number): AnyChange[] {
+    this._queueAndDispatch([change], sourceWindowId);
     const effects = this._history.apply(change, this._exec);
-    return [...effects, this._currentUndoRedoStatusChange()];
+    const statusChange = this._currentUndoRedoStatusChange();
+    const result = [...effects, statusChange];
+    this._queueAndDispatch(result);
+    return [];
   }
   undo(): AnyChange[] {
     const changes = this._history.undo(this._exec);
-    return [...changes, this._currentUndoRedoStatusChange()];
+    const statusChange = this._currentUndoRedoStatusChange();
+    this._queueAndDispatch([...changes, statusChange]);
+    return [];
   }
   redo(): AnyChange[] {
     const changes = this._history.redo(this._exec);
-    return [...changes, this._currentUndoRedoStatusChange()];
+    const statusChange = this._currentUndoRedoStatusChange();
+    this._queueAndDispatch([...changes, statusChange]);
+    return [];
+  }
+
+  addWindow(window: BrowserWindow): void {
+    if (this._windows.has(window.id)) {
+      return;
+    }
+    this._registerWindow(window);
+  }
+
+  removeWindow(windowId: number): void {
+    this._windows.delete(windowId);
+    this._changeDistributor.unregister(windowId);
   }
 }

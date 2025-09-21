@@ -9,8 +9,10 @@ import { TahiNavbar } from '@renderer/features/ui/TahiNavbar';
 import { useAppSelector } from '@renderer/app/hooks';
 import { selectMobileOpened, selectDesktopOpened } from '@renderer/features/ui/NavbarSlice';
 import { TodoItem } from '@common/types/TodoItem';
+import { AnyChange } from '@common/types/AnyChange';
 import { useAppDispatch } from '@renderer/app/hooks';
 import { areApiCallbacksAdded, setApiCallbacksAdded } from './features/ui/AppSlice';
+import { applyRemoteChanges } from '@renderer/features/todolist/TodolistSlice';
 
 export default function App(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);
@@ -24,6 +26,12 @@ export default function App(): React.JSX.Element {
     window.api.onPushList((listName: string, list: TodoItem[]) => {
       console.log(`Received ${listName} from main process`);
       dispatch({ type: 'todolist/setTodoItems', payload: { listName: listName, items: list } });
+    });
+    window.api.onPushChanges((changes: AnyChange[]) => {
+      if (!changes || changes.length === 0) {
+        return;
+      }
+      dispatch(applyRemoteChanges(changes));
     });
     dispatch(setApiCallbacksAdded(true));
   }

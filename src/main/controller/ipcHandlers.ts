@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { sampleList } from '@main/state/sampleListState';
 import { MainState } from '@main/state/MainState';
 import { loadTodoList, saveTodoList, saveTodoListAs } from '@main/repository/TodoListRepository';
@@ -25,10 +25,16 @@ export function setupIpcHandlers(mainState: MainState): void {
     return sampleList;
   });
 
-  ipcMain.handle('apply-change', async (_event, change) => {
-    void _event; // make eslint ignore the unused _event parameter
-    console.log('Received change:', change.type);
-    return mainState.applyChange(change);
+  ipcMain.handle('apply-change', async (event, change) => {
+    const originWindow = BrowserWindow.fromWebContents(event.sender);
+    if (originWindow) {
+      const sourceWindowId = originWindow.id;
+      console.log('Received change:', change.type, 'from window', sourceWindowId);
+      return mainState.applyChange(change, sourceWindowId);
+    } else {
+      console.error('Could not determine source window for apply-change');
+      return [];
+    }
   });
 
   ipcMain.handle('undo', async () => {
