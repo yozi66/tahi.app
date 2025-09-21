@@ -38,8 +38,4 @@ export function setupIpcHandlers(mainState: MainState): void {
   ipcMain.handle('redo', async () => {
     return mainState.redo();
   });
-
-  ipcMain.handle('undo-redo-status', async () => {
-    return mainState.undoRedoStatus();
-  });
 }

@@ -20,4 +20,14 @@ export interface UpdateItemChange extends Change {
   newData: Partial<TodoItem>;
 }
 
-export type AnyChange = AddItemsChange | DeleteItemsChange | UpdateItemChange;
+export interface UndoRedoStatusChange extends Change {
+  type: 'setUndoRedoStatus';
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
+export type AnyChange =
+  | AddItemsChange
+  | DeleteItemsChange
+  | UpdateItemChange
+  | UndoRedoStatusChange;

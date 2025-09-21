@@ -75,6 +75,13 @@ export class MainState {
     private _mainSettings: MainSettings,
   ) {}
   private _history = new UndoRedoHistory();
+  private _currentUndoRedoStatusChange(): AnyChange {
+    return {
+      type: 'setUndoRedoStatus',
+      canUndo: this._history.canUndo(),
+      canRedo: this._history.canRedo(),
+    };
+  }
 
   get mainWindow(): BrowserWindow {
     return this._mainWindow;
@@ -92,6 +99,9 @@ export class MainState {
     }
   }
   private _exec: ChangeExecutor = (change: AnyChange) => {
+    if (change.type === 'setUndoRedoStatus') {
+      throw new Error('setUndoRedoStatus changes are not executable in main state');
+    }
     switch (change.type) {
       case 'addItems':
         return this._mainList.addItems(change.items);
@@ -106,18 +116,15 @@ export class MainState {
     }
   };
   applyChange(change: AnyChange): AnyChange[] {
-    return this._history.apply(change, this._exec);
+    const effects = this._history.apply(change, this._exec);
+    return [...effects, this._currentUndoRedoStatusChange()];
   }
   undo(): AnyChange[] {
-    return this._history.undo(this._exec);
+    const changes = this._history.undo(this._exec);
+    return [...changes, this._currentUndoRedoStatusChange()];
   }
   redo(): AnyChange[] {
-    return this._history.redo(this._exec);
-  }
-  undoRedoStatus(): { canUndo: boolean; canRedo: boolean } {
-    return {
-      canUndo: this._history.canUndo(),
-      canRedo: this._history.canRedo(),
-    };
+    const changes = this._history.redo(this._exec);
+    return [...changes, this._currentUndoRedoStatusChange()];
   }
 }

@@ -16,6 +16,8 @@ export type TodolistSlice = {
   nextId: number;
   saved?: boolean;
   status?: 'idle' | 'loading' | 'saving' | 'failed' | 'synching';
+  canUndo: boolean;
+  canRedo: boolean;
 };
 
 const computeItemIndex = (todoItems: TodoItem[], id: number): number => {
@@ -31,6 +33,8 @@ const initialState: TodolistSlice = {
   nextId: 1,
   saved: true,
   status: 'idle',
+  canUndo: false,
+  canRedo: false,
 };
 
 const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): void => {
@@ -46,6 +50,8 @@ const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): v
     state.nextId = 1;
   }
   state.saved = true;
+  state.canUndo = false;
+  state.canRedo = false;
   document.title = listName;
   console.log(`Loaded ${items.length} items from ${listName}`);
 };
@@ -110,6 +116,11 @@ const applySingleChange = (
         if (patch.done !== undefined) item.done = patch.done;
         state.saved = false;
       }
+      break;
+    }
+    case 'setUndoRedoStatus': {
+      state.canUndo = change.canUndo;
+      state.canRedo = change.canRedo;
       break;
     }
     default: {
@@ -285,11 +296,20 @@ export const todolistSlice = createAppSlice({
     getNextId: (state) => state.nextId,
     getSelectedItemId: (state) => state.selectedItemId,
     getSelectedItemIndex: (state) => state.selectedItemIndex,
+    getCanUndo: (state) => state.canUndo,
+    getCanRedo: (state) => state.canRedo,
   },
 });
 export const { sendAndApplyChange, updateItem, setSelectedItemId, setEditingTitle, undo, redo } =
   todolistSlice.actions;
 
-export const { getEditingTitle, getItems, getNextId, getSelectedItemId, getSelectedItemIndex } =
-  todolistSlice.selectors;
+export const {
+  getEditingTitle,
+  getItems,
+  getNextId,
+  getSelectedItemId,
+  getSelectedItemIndex,
+  getCanUndo,
+  getCanRedo,
+} = todolistSlice.selectors;
 export const { load, save } = todolistSlice.actions;

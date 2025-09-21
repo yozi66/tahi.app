@@ -12,7 +12,6 @@ interface TahiApi {
   applyChange: (change: AnyChange) => Promise<AnyChange[]>;
   undo: () => Promise<AnyChange[]>;
   redo: () => Promise<AnyChange[]>;
-  undoRedoStatus: () => Promise<{ canUndo: boolean; canRedo: boolean }>;
   /* planned extension:
   onPushChanges: (callback: (changes: AnyChange[]) => void) => void;
   */

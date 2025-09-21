@@ -13,6 +13,8 @@ import {
   getNextId,
   getSelectedItemId,
   getSelectedItemIndex,
+  getCanUndo,
+  getCanRedo,
   load,
   save,
   undo,
@@ -38,30 +40,8 @@ export function TahiHeader(): React.JSX.Element {
   const selectedItemId = useAppSelector(getSelectedItemId);
   const selectedItemIndex = useAppSelector(getSelectedItemIndex);
   const nextId = useAppSelector(getNextId);
-  const [canUndo, setCanUndo] = React.useState(false);
-  const [canRedo, setCanRedo] = React.useState(false);
-
-  React.useEffect(() => {
-    let mounted = true;
-    void window.api
-      .undoRedoStatus()
-      .then(({ canUndo: undoAvailable, canRedo: redoAvailable }) => {
-        if (mounted) {
-          setCanUndo(undoAvailable);
-          setCanRedo(redoAvailable);
-        }
-      })
-      .catch((err: unknown) => {
-        console.error('Failed to fetch undo/redo status', err);
-        if (mounted) {
-          setCanUndo(false);
-          setCanRedo(false);
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [items]);
+  const canUndo = useAppSelector(getCanUndo);
+  const canRedo = useAppSelector(getCanRedo);
 
   return (
     <Group h="100%" px="md">
