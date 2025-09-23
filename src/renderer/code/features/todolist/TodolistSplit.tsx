@@ -66,7 +66,7 @@ export default function TodolistSplit(): React.JSX.Element {
   const handleCommit = (value: string): void => {
     if (!selectedItem) return;
     if ((selectedItem.comments ?? '') !== value) {
-      dispatch(updateItem({ id: selectedItem.id, newData: { comments: value } }));
+      void dispatch(updateItem({ id: selectedItem.id, newData: { comments: value } }));
     }
   };
 

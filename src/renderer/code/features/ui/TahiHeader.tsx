@@ -21,6 +21,7 @@ import {
   redo,
   sendAndApplyChange,
 } from '@renderer/features/todolist/TodolistSlice';
+import { AnyChange } from '@common/types/AnyChange';
 import {
   IconArrowBackUp,
   IconArrowForwardUp,
@@ -101,14 +102,13 @@ export function TahiHeader(): React.JSX.Element {
           onClick={() => {
             const atIndex =
               selectedItemIndex === undefined || selectedItemIndex < 0 ? -1 : selectedItemIndex + 1;
-            dispatch(
-              sendAndApplyChange({
-                type: 'addItems',
-                items: [
-                  { item: { id: nextId, title: '', done: false, comments: '' }, index: atIndex },
-                ],
-              }),
-            );
+            const change: AnyChange = {
+              type: 'addItems',
+              items: [
+                { item: { id: nextId, title: '', done: false, comments: '' }, index: atIndex },
+              ],
+            };
+            void dispatch(sendAndApplyChange(change));
           }}
         >
           <IconRowInsertBottom size={20} />
@@ -122,12 +122,11 @@ export function TahiHeader(): React.JSX.Element {
           aria-label="Delete task"
           onClick={() => {
             if (selectedItemId !== undefined) {
-              dispatch(
-                sendAndApplyChange({
-                  type: 'deleteItems',
-                  ids: [selectedItemId],
-                }),
-              );
+              const change: AnyChange = {
+                type: 'deleteItems',
+                ids: [selectedItemId],
+              };
+              void dispatch(sendAndApplyChange(change));
             }
           }}
         >

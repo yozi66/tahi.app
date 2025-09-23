@@ -1,7 +1,6 @@
 import { createAppSlice } from '@renderer/app/createAppSlice';
 import { TodoItem } from '@common/types/TodoItem';
 import { Draft } from 'immer';
-import { PayloadAction } from '@reduxjs/toolkit';
 import { AnyChange } from '@common/types/AnyChange';
 import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
 
@@ -18,6 +17,7 @@ export type TodolistSlice = {
   status?: 'idle' | 'loading' | 'saving' | 'failed' | 'synching';
   canUndo: boolean;
   canRedo: boolean;
+  pendingFocusId?: number;
 };
 
 const computeItemIndex = (todoItems: TodoItem[], id: number): number => {
@@ -35,6 +35,7 @@ const initialState: TodolistSlice = {
   status: 'idle',
   canUndo: false,
   canRedo: false,
+  pendingFocusId: undefined,
 };
 
 const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): void => {
@@ -133,16 +134,16 @@ const applySingleChange = (
 const applyChangeBatch = (state: Draft<TodolistSlice>, changes: AnyChange[]): void => {
   console.log(`Applying ${changes.length} changes`);
   for (const change of changes) {
-    applySingleChange(state, change, { focusOnFirstAdded: false });
+    const shouldFocus =
+      change.type === 'addItems' &&
+      state.pendingFocusId !== undefined &&
+      change.items.some(({ item }) => item.id === state.pendingFocusId);
+    applySingleChange(state, change, { focusOnFirstAdded: shouldFocus });
+    if (shouldFocus) {
+      state.pendingFocusId = undefined;
+    }
   }
-};
-
-const applyChanges = (
-  state: Draft<TodolistSlice>,
-  { payload }: PayloadAction<AnyChange[]>,
-): void => {
-  state.status = 'idle';
-  applyChangeBatch(state, payload);
+  state.pendingFocusId = undefined;
 };
 
 export const todolistSlice = createAppSlice({
@@ -151,16 +152,18 @@ export const todolistSlice = createAppSlice({
   reducers: (create) => ({
     sendAndApplyChange: create.asyncThunk(
       async (payload: AnyChange) => {
-        const result = await window.api.applyChange(payload);
-        return result; // AnyChange[] - further changes to apply
+        window.api.applyChange(payload);
       },
       {
         pending: (state, action: { meta: { arg: AnyChange } }) => {
           state.status = 'synching';
-          const change = action.meta.arg;
-          applySingleChange(state, change, { focusOnFirstAdded: true });
+          if (action.meta.arg.type === 'addItems' && action.meta.arg.items.length > 0) {
+            state.pendingFocusId = action.meta.arg.items[0]?.item.id;
+          }
         },
-        fulfilled: applyChanges,
+        fulfilled: () => {
+          // wait for remote push to update state
+        },
         rejected: (state) => {
           state.status = 'failed';
           console.error('Change failed');
@@ -234,20 +237,15 @@ export const todolistSlice = createAppSlice({
           id: payload.id,
           newData: payload.newData,
         };
-        const result = await window.api.applyChange(change);
-        return result; // AnyChange[] - further changes to apply
+        window.api.applyChange(change);
       },
       {
-        pending: (state, action: { meta: { arg: { id: number; newData: Partial<TodoItem> } } }) => {
+        pending: (state) => {
           state.status = 'synching';
-          const { id, newData } = action.meta.arg;
-          applySingleChange(
-            state,
-            { type: 'updateItem', id, newData },
-            { focusOnFirstAdded: false },
-          );
         },
-        fulfilled: applyChanges,
+        fulfilled: () => {
+          // remote push will update store
+        },
         rejected: (state) => {
           state.status = 'failed';
           console.error('Change failed');
@@ -261,15 +259,16 @@ export const todolistSlice = createAppSlice({
     ),
     undo: create.asyncThunk(
       async () => {
-        const result = await window.api.undo();
-        return result; // AnyChange[] - changes to apply
+        window.api.undo();
       },
       {
         pending: (state) => {
           state.status = 'synching';
           console.log('Undoing...');
         },
-        fulfilled: applyChanges,
+        fulfilled: () => {
+          // status reset when remote changes arrive
+        },
         rejected: (state) => {
           state.status = 'failed';
           console.error('Undo failed');
@@ -278,15 +277,16 @@ export const todolistSlice = createAppSlice({
     ),
     redo: create.asyncThunk(
       async () => {
-        const result = await window.api.redo();
-        return result; // AnyChange[] - changes to apply
+        window.api.redo();
       },
       {
         pending: (state) => {
           state.status = 'synching';
           console.log('Redoing...');
         },
-        fulfilled: applyChanges,
+        fulfilled: () => {
+          // status reset when remote changes arrive
+        },
         rejected: (state) => {
           state.status = 'failed';
           console.error('Redo failed');
@@ -294,6 +294,7 @@ export const todolistSlice = createAppSlice({
       },
     ),
     applyRemoteChanges: create.reducer((state, action: { payload: AnyChange[] }) => {
+      state.status = 'idle';
       applyChangeBatch(state, action.payload);
     }),
   }),

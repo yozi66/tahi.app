@@ -66,12 +66,12 @@ export class MainState {
     }
   }
 
-  private _queueAndDispatch(changes: AnyChange[], sourceWindowId?: number): void {
-    console.log(`queueAndDispatch: ${changes.length} changes from window ${sourceWindowId}`);
+  private _queueAndDispatch(changes: AnyChange[]): void {
+    console.log(`queueAndDispatch: ${changes.length} changes`);
     if (changes.length === 0) {
       return;
     }
-    this._changeDistributor.enqueueForObservers(changes, sourceWindowId);
+    this._changeDistributor.enqueueForObservers(changes);
     this._dispatchQueuedChanges();
   }
 
@@ -107,25 +107,22 @@ export class MainState {
       }
     }
   };
-  applyChange(change: AnyChange, sourceWindowId: number): AnyChange[] {
-    this._queueAndDispatch([change], sourceWindowId);
+  applyChange(change: AnyChange): void {
+    this._queueAndDispatch([change]);
     const effects = this._history.apply(change, this._exec);
     const statusChange = this._currentUndoRedoStatusChange();
     const result = [...effects, statusChange];
     this._queueAndDispatch(result);
-    return [];
   }
-  undo(): AnyChange[] {
+  undo(): void {
     const changes = this._history.undo(this._exec);
     const statusChange = this._currentUndoRedoStatusChange();
     this._queueAndDispatch([...changes, statusChange]);
-    return [];
   }
-  redo(): AnyChange[] {
+  redo(): void {
     const changes = this._history.redo(this._exec);
     const statusChange = this._currentUndoRedoStatusChange();
     this._queueAndDispatch([...changes, statusChange]);
-    return [];
   }
 
   addWindow(window: BrowserWindow): void {

@@ -17,9 +17,15 @@ const api = {
       callback(listName, todoList);
     });
   },
-  applyChange: (change: AnyChange) => ipcRenderer.invoke('apply-change', change),
-  undo: () => ipcRenderer.invoke('undo'),
-  redo: () => ipcRenderer.invoke('redo'),
+  applyChange: (change: AnyChange): void => {
+    ipcRenderer.send('apply-change', change);
+  },
+  undo: (): void => {
+    ipcRenderer.send('undo');
+  },
+  redo: (): void => {
+    ipcRenderer.send('redo');
+  },
   onPushChanges: (callback: (changes: AnyChange[]) => void) => {
     const listener = (_event: unknown, changes: AnyChange[]): void => {
       callback(changes);

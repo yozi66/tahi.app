@@ -25,23 +25,22 @@ export function setupIpcHandlers(mainState: MainState): void {
     return sampleList;
   });
 
-  ipcMain.handle('apply-change', async (event, change) => {
+  ipcMain.on('apply-change', (event, change) => {
     const originWindow = BrowserWindow.fromWebContents(event.sender);
     if (originWindow) {
       const sourceWindowId = originWindow.id;
       console.log('Received change:', change.type, 'from window', sourceWindowId);
-      return mainState.applyChange(change, sourceWindowId);
+      mainState.applyChange(change);
     } else {
       console.error('Could not determine source window for apply-change');
-      return [];
     }
   });
 
-  ipcMain.handle('undo', async () => {
-    return mainState.undo();
+  ipcMain.on('undo', () => {
+    mainState.undo();
   });
 
-  ipcMain.handle('redo', async () => {
-    return mainState.redo();
+  ipcMain.on('redo', () => {
+    mainState.redo();
   });
 }

@@ -67,7 +67,7 @@ export default function Todolist(): React.JSX.Element {
 
     // If the done checkbox is clicked, toggle the done state of the item.
     if (column.accessor === 'done') {
-      dispatch(updateItem({ id: record.id, newData: { done: !record.done } }));
+      void dispatch(updateItem({ id: record.id, newData: { done: !record.done } }));
     }
   };
   const clearTitleBuffer = useTodolistUIStore((s) => s.clearTitle);
@@ -77,7 +77,7 @@ export default function Todolist(): React.JSX.Element {
       if (record.id !== tahiState.selectedItemId) return;
       // Commit the change if it is different from the original title
       if ((record.title ?? '') !== value) {
-        dispatch(updateItem({ id: record.id, newData: { title: value } }));
+        void dispatch(updateItem({ id: record.id, newData: { title: value } }));
       }
       clearTitleBuffer(record.id);
     },

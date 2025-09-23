@@ -16,14 +16,11 @@ export class ChangeDistributor {
     this._queues.delete(windowId);
   }
 
-  enqueueForObservers(changes: AnyChange[], originId?: WindowId): void {
+  enqueueForObservers(changes: AnyChange[]): void {
     if (changes.length === 0) {
       return;
     }
-    for (const [windowId, queue] of this._queues) {
-      if (windowId === originId) {
-        continue;
-      }
+    for (const queue of this._queues.values()) {
       queue.push(...changes);
     }
   }
