@@ -1,6 +1,6 @@
 import { createAppSlice } from '@renderer/app/createAppSlice';
 import { TodoItem } from '@common/types/TodoItem';
-import { Draft } from 'immer';
+import type { Draft } from '@reduxjs/toolkit';
 import { AnyChange } from '@common/types/AnyChange';
 import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
 

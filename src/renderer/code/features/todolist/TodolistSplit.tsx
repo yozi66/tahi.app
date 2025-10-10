@@ -3,8 +3,7 @@ import Todolist from './Todolist';
 import { Allotment } from 'allotment';
 import { updateItem } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
-import { useEffect, useMemo } from 'react';
-import { useTodolistUIStore } from './useTodolistUIStore';
+import { useEffect, useMemo, useState } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
 
 function CommentsEditor({
@@ -14,41 +13,29 @@ function CommentsEditor({
   selectedItem?: TodoItem;
   onCommit: (value: string) => void;
 }): React.JSX.Element {
-  const commentsValue = useTodolistUIStore(
-    (s) => (selectedItem ? s.comments[selectedItem.id] : undefined),
-    (a, b) => a === b,
-  );
-  const initComments = useTodolistUIStore((s) => s.initComments);
-  const setComments = useTodolistUIStore((s) => s.setComments);
-  const clearComments = useTodolistUIStore((s) => s.clearComments);
-
   const itemId = selectedItem?.id;
-  const initialComments = selectedItem?.comments ?? '';
+  const [draft, setDraft] = useState(selectedItem?.comments ?? '');
 
   useEffect(() => {
-    if (itemId !== undefined) {
-      initComments(itemId, initialComments);
-    }
-  }, [itemId, initialComments, initComments]);
+    setDraft(selectedItem?.comments ?? '');
+  }, [itemId, selectedItem?.comments]);
 
   const commit = (): void => {
     if (itemId === undefined) return;
-    const current = commentsValue ?? initialComments;
-    onCommit(current);
-    clearComments(itemId);
+    onCommit(draft);
   };
 
   return (
     <Textarea
       label="Task comments"
-      value={commentsValue ?? selectedItem?.comments ?? ''}
+      value={itemId !== undefined ? draft : ''}
       styles={{
         root: { height: '100%' },
         input: { height: `calc(100% - 30px)`, resize: 'none' },
         wrapper: { height: '100%' },
       }}
       disabled={itemId === undefined}
-      onChange={(e) => itemId !== undefined && setComments(itemId, e.target.value)}
+      onChange={(e) => itemId !== undefined && setDraft(e.target.value)}
       onBlur={commit}
     />
   );

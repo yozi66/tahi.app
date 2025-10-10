@@ -3,13 +3,12 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import { setSelectedItemId, setEditingTitle, updateItem } from './TodolistSlice';
-import { useTodolistUIStore } from './useTodolistUIStore';
 
-// A focused cell component that subscribes only to its own local title buffer
+// A focused cell component that keeps its own local editing buffer
 const TitleCell = memo(function TitleCell({
   todo,
   isEditing,
@@ -19,14 +18,13 @@ const TitleCell = memo(function TitleCell({
   isEditing: boolean;
   onCommit: (value: string) => void;
 }): React.JSX.Element {
-  const localTitle = useTodolistUIStore(
-    (s) => s.titles[todo.id],
-    (a, b) => a === b,
-  );
-  const setTitle = useTodolistUIStore((s) => s.setTitle);
+  const [draft, setDraft] = useState(todo.title ?? '');
 
-  const effectiveValue = localTitle ?? todo.title;
-  const chars = effectiveValue.length;
+  useEffect(() => {
+    setDraft(todo.title ?? '');
+  }, [todo.id, todo.title]);
+
+  const chars = draft.length;
   const width = chars < 20 ? '140px' : `${chars * 7}px`;
 
   if (!isEditing) {
@@ -40,10 +38,10 @@ const TitleCell = memo(function TitleCell({
   return (
     <input
       type="text"
-      value={effectiveValue}
+      value={draft}
       style={{ width: `${width}` }}
-      onChange={(e) => setTitle(todo.id, e.target.value)}
-      onBlur={() => onCommit(effectiveValue)}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => onCommit(draft)}
       autoFocus
     />
   );
@@ -60,17 +58,12 @@ export default function Todolist(): React.JSX.Element {
     // If the title is clicked, set the editing mode for the title.
     const editingTitle = column.accessor === 'title';
     dispatch(setEditingTitle(editingTitle));
-    if (editingTitle) {
-      // Initialize local buffer for this id only
-      useTodolistUIStore.getState().initTitle(record.id, record.title ?? '');
-    }
 
     // If the done checkbox is clicked, toggle the done state of the item.
     if (column.accessor === 'done') {
       void dispatch(updateItem({ id: record.id, newData: { done: !record.done } }));
     }
   };
-  const clearTitleBuffer = useTodolistUIStore((s) => s.clearTitle);
   const handleCommit = useCallback(
     (record: TodoItem, value: string) => {
       if (!tahiState.editingTitle) return;
@@ -79,9 +72,8 @@ export default function Todolist(): React.JSX.Element {
       if ((record.title ?? '') !== value) {
         void dispatch(updateItem({ id: record.id, newData: { title: value } }));
       }
-      clearTitleBuffer(record.id);
     },
-    [dispatch, clearTitleBuffer, tahiState.editingTitle, tahiState.selectedItemId],
+    [dispatch, tahiState.editingTitle, tahiState.selectedItemId],
   );
 
   const columns = [

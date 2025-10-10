@@ -1,5 +1,5 @@
 import { TodoItem } from '@common/types/TodoItem';
-import type { Draft } from 'immer';
+import type { Draft } from '@reduxjs/toolkit';
 // Shared helpers for applying add/delete changes on TodoItem arrays in-place.
 
 export const applyAddItems = (
