@@ -1,7 +1,7 @@
 import { Box, Textarea } from '@mantine/core';
-import Todolist from './Todolist';
 import { Allotment } from 'allotment';
-import { updateItem } from './TodolistSlice';
+import Todolist from './Todolist';
+import { getItems, getFirstSelectedItemIndex, updateItem } from './TodolistSlice';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
@@ -43,11 +43,11 @@ function CommentsEditor({
 
 export default function TodolistSplit(): React.JSX.Element {
   const dispatch = useAppDispatch();
-  const tahiState = useAppSelector((state) => state.todolist);
-  const selectedIndex = tahiState.selectedItemIndex;
+  const todoItems = useAppSelector(getItems);
+  const selectedIndex = useAppSelector(getFirstSelectedItemIndex);
   const selectedItem = useMemo(
-    () => (selectedIndex !== undefined ? tahiState.todoItems[selectedIndex] : undefined),
-    [selectedIndex, tahiState.todoItems],
+    () => (selectedIndex !== undefined ? todoItems[selectedIndex] : undefined),
+    [selectedIndex, todoItems],
   );
 
   const handleCommit = (value: string): void => {

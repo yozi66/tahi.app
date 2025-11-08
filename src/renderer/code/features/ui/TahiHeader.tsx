@@ -11,8 +11,8 @@ import {
 import {
   getItems,
   getNextId,
-  getSelectedItemId,
-  getSelectedItemIndex,
+  getSelectedItemIds,
+  getTopSelectedItemIndex,
   getCanUndo,
   getCanRedo,
   load,
@@ -38,8 +38,8 @@ export function TahiHeader(): React.JSX.Element {
   const mobileOpened = useAppSelector(selectMobileOpened);
   const desktopOpened = useAppSelector(selectDesktopOpened);
   const items = useAppSelector(getItems);
-  const selectedItemId = useAppSelector(getSelectedItemId);
-  const selectedItemIndex = useAppSelector(getSelectedItemIndex);
+  const selectedItemIds = useAppSelector(getSelectedItemIds);
+  const topSelectedItemIndex = useAppSelector(getTopSelectedItemIndex);
   const nextId = useAppSelector(getNextId);
   const canUndo = useAppSelector(getCanUndo);
   const canRedo = useAppSelector(getCanRedo);
@@ -101,7 +101,9 @@ export function TahiHeader(): React.JSX.Element {
           aria-label="Add task"
           onClick={() => {
             const atIndex =
-              selectedItemIndex === undefined || selectedItemIndex < 0 ? -1 : selectedItemIndex + 1;
+              topSelectedItemIndex === undefined || topSelectedItemIndex < 0
+                ? -1
+                : topSelectedItemIndex + 1;
             const change: AnyChange = {
               type: 'addItems',
               items: [
@@ -121,10 +123,10 @@ export function TahiHeader(): React.JSX.Element {
           size="sm"
           aria-label="Delete task"
           onClick={() => {
-            if (selectedItemId !== undefined) {
+            if (selectedItemIds.length > 0) {
               const change: AnyChange = {
                 type: 'deleteItems',
-                ids: [selectedItemId],
+                ids: selectedItemIds,
               };
               void dispatch(sendAndApplyChange(change));
             }

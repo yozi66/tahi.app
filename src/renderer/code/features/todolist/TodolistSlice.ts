@@ -4,11 +4,13 @@ import type { Draft } from '@reduxjs/toolkit';
 import { AnyChange } from '@common/types/AnyChange';
 import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
 
-// State of the todolist feature
-
 export type TodolistSlice = {
-  selectedItemId?: number;
-  selectedItemIndex?: number;
+  firstSelectedItemId?: number;
+  topSelectedItemId?: number;
+  selectedItemIds: number[];
+  firstSelectedItemIndex?: number;
+  topSelectedItemIndex?: number;
+  selectedItemIndexes: number[];
   editingTitle?: boolean;
   listName: string;
   todoItems: TodoItem[];
@@ -24,9 +26,51 @@ const computeItemIndex = (todoItems: TodoItem[], id: number): number => {
   return todoItems.findIndex((item) => item.id === id);
 };
 
+const applySelection = (state: Draft<TodolistSlice>, ids: number[]): void => {
+  const uniqueIds: number[] = [];
+  const uniqueSet = new Set<number>();
+  const indexes: number[] = [];
+  let topIndex = Number.POSITIVE_INFINITY;
+  let topId: number | undefined;
+
+  for (const id of ids) {
+    if (uniqueSet.has(id)) continue;
+    const idx = computeItemIndex(state.todoItems, id);
+    if (idx === -1) continue;
+    uniqueSet.add(id);
+    uniqueIds.push(id);
+    indexes.push(idx);
+    if (idx < topIndex) {
+      topIndex = idx;
+      topId = id;
+    }
+  }
+
+  if (uniqueIds.length === 0) {
+    state.firstSelectedItemId = undefined;
+    state.firstSelectedItemIndex = undefined;
+    state.topSelectedItemId = undefined;
+    state.topSelectedItemIndex = undefined;
+    state.selectedItemIds = [];
+    state.selectedItemIndexes = [];
+    return;
+  }
+
+  state.firstSelectedItemId = uniqueIds[0];
+  state.firstSelectedItemIndex = indexes[0];
+  state.topSelectedItemId = topId;
+  state.topSelectedItemIndex = topIndex === Number.POSITIVE_INFINITY ? undefined : topIndex;
+  state.selectedItemIds = uniqueIds;
+  state.selectedItemIndexes = indexes;
+};
+
 const initialState: TodolistSlice = {
-  selectedItemId: 1,
-  selectedItemIndex: 0,
+  firstSelectedItemId: 1,
+  topSelectedItemId: 1,
+  selectedItemIds: [1],
+  firstSelectedItemIndex: 0,
+  topSelectedItemIndex: 0,
+  selectedItemIndexes: [0],
   editingTitle: false,
   listName: '(new TodoList)',
   todoItems: [],
@@ -38,16 +82,14 @@ const initialState: TodolistSlice = {
   pendingFocusId: undefined,
 };
 
-const loadItems = (state: TodolistSlice, listName: string, items: TodoItem[]): void => {
+const loadItems = (state: Draft<TodolistSlice>, listName: string, items: TodoItem[]): void => {
   state.listName = listName;
   state.todoItems = items;
   if (items.length > 0) {
-    state.selectedItemId = items[0].id;
-    state.selectedItemIndex = 0;
+    applySelection(state, [items[0].id]);
     state.nextId = Math.max(...items.map((item) => item.id)) + 1;
   } else {
-    state.selectedItemId = undefined;
-    state.selectedItemIndex = undefined;
+    applySelection(state, []);
     state.nextId = 1;
   }
   state.saved = true;
@@ -75,34 +117,34 @@ const applySingleChange = (
       // Optionally focus selection on first added item
       if (opts?.focusOnFirstAdded && itemsWithIndex.length > 0) {
         const firstId = itemsWithIndex[0].item.id;
-        state.selectedItemId = firstId;
-        state.selectedItemIndex = computeItemIndex(state.todoItems, firstId);
+        applySelection(state, [firstId]);
         state.editingTitle = true;
       }
       state.saved = false;
       break;
     }
     case 'deleteItems': {
+      const prevSelectedIds = state.selectedItemIds.slice();
+      const prevSelectedIndexes = state.selectedItemIndexes.slice();
       applyDeleteItems(state.todoItems, change.ids);
       const idsToDelete = new Set(change.ids);
-      const selectedWasDeleted =
-        state.selectedItemId !== undefined && idsToDelete.has(state.selectedItemId);
-      if (selectedWasDeleted) {
-        // Selected item was deleted, update selection
-        if (state.todoItems.length > 0) {
-          state.selectedItemIndex = Math.min(
-            state.selectedItemIndex ?? 0,
-            state.todoItems.length - 1,
-          );
-          state.selectedItemId = state.todoItems[state.selectedItemIndex].id;
-        } else {
-          state.selectedItemId = undefined;
-          state.selectedItemIndex = undefined;
-        }
+      const remainingSelected = prevSelectedIds.filter((id) => !idsToDelete.has(id));
+
+      if (remainingSelected.length > 0) {
+        applySelection(state, remainingSelected);
+      } else if (state.todoItems.length > 0) {
+        const fallbackIndexCandidate =
+          prevSelectedIndexes.length > 0 ? Math.min(...prevSelectedIndexes) : 0;
+        const fallbackIndex = Math.min(
+          Math.max(fallbackIndexCandidate, 0),
+          state.todoItems.length - 1,
+        );
+        const fallbackId = state.todoItems[fallbackIndex].id;
+        applySelection(state, [fallbackId]);
         state.editingTitle = false;
-      } else if (state.selectedItemId !== undefined) {
-        // Update selected item index based on current selected item ID
-        state.selectedItemIndex = computeItemIndex(state.todoItems, state.selectedItemId);
+      } else {
+        applySelection(state, []);
+        state.editingTitle = false;
       }
       state.saved = false;
       break;
@@ -227,8 +269,13 @@ export const todolistSlice = createAppSlice({
       state.editingTitle = action.payload;
     }),
     setSelectedItemId: create.reducer((state, action: { payload: number }) => {
-      state.selectedItemId = action.payload;
-      state.selectedItemIndex = computeItemIndex(state.todoItems, action.payload);
+      applySelection(state, [action.payload]);
+    }),
+    setSelectedItemIds: create.reducer((state, action: { payload: number[] }) => {
+      applySelection(state, action.payload);
+      if (state.selectedItemIds.length !== 1) {
+        state.editingTitle = false;
+      }
     }),
     updateItem: create.asyncThunk(
       async (payload: { id: number; newData: Partial<TodoItem> }) => {
@@ -302,8 +349,12 @@ export const todolistSlice = createAppSlice({
     getEditingTitle: (state) => state.editingTitle,
     getItems: (state) => state.todoItems,
     getNextId: (state) => state.nextId,
-    getSelectedItemId: (state) => state.selectedItemId,
-    getSelectedItemIndex: (state) => state.selectedItemIndex,
+    getFirstSelectedItemId: (state) => state.firstSelectedItemId,
+    getTopSelectedItemId: (state) => state.topSelectedItemId,
+    getSelectedItemIds: (state) => state.selectedItemIds,
+    getFirstSelectedItemIndex: (state) => state.firstSelectedItemIndex,
+    getTopSelectedItemIndex: (state) => state.topSelectedItemIndex,
+    getSelectedItemIndexes: (state) => state.selectedItemIndexes,
     getCanUndo: (state) => state.canUndo,
     getCanRedo: (state) => state.canRedo,
   },
@@ -312,6 +363,7 @@ export const {
   sendAndApplyChange,
   updateItem,
   setSelectedItemId,
+  setSelectedItemIds,
   setEditingTitle,
   undo,
   redo,
@@ -322,8 +374,12 @@ export const {
   getEditingTitle,
   getItems,
   getNextId,
-  getSelectedItemId,
-  getSelectedItemIndex,
+  getFirstSelectedItemId,
+  getTopSelectedItemId,
+  getSelectedItemIds,
+  getFirstSelectedItemIndex,
+  getTopSelectedItemIndex,
+  getSelectedItemIndexes,
   getCanUndo,
   getCanRedo,
 } = todolistSlice.selectors;

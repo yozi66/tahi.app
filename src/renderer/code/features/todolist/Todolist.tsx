@@ -3,10 +3,15 @@ import 'mantine-datatable/styles.layer.css';
 
 import { DataTable, DataTableColumn } from 'mantine-datatable';
 import { Text } from '@mantine/core';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { TodoItem } from '@common/types/TodoItem';
 import { useAppDispatch, useAppSelector } from '@renderer/app/hooks';
-import { setSelectedItemId, setEditingTitle, updateItem } from './TodolistSlice';
+import {
+  setSelectedItemId,
+  setSelectedItemIds,
+  setEditingTitle,
+  updateItem,
+} from './TodolistSlice';
 
 // A focused cell component that keeps its own local editing buffer
 const TitleCell = memo(function TitleCell({
@@ -50,16 +55,58 @@ const TitleCell = memo(function TitleCell({
 export default function Todolist(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const tahiState = useAppSelector((state) => state.todolist);
+  const primarySelectedId = tahiState.firstSelectedItemId;
+  const selectedIdsSet = useMemo(
+    () => new Set(tahiState.selectedItemIds),
+    [tahiState.selectedItemIds],
+  );
 
-  const handleCellClick = (record: TodoItem, column: DataTableColumn<TodoItem>): void => {
-    // Update the selected item ID and index based on the clicked record
-    dispatch(setSelectedItemId(record.id));
+  const handleCellClick = (
+    event: React.MouseEvent,
+    record: TodoItem,
+    column: DataTableColumn<TodoItem>,
+  ): void => {
+    const clickedIndex = tahiState.todoItems.findIndex((item) => item.id === record.id);
+    if (clickedIndex === -1) return;
 
-    // If the title is clicked, set the editing mode for the title.
-    const editingTitle = column.accessor === 'title';
+    const isShift = event.shiftKey;
+    const isCtrlLike = event.ctrlKey || event.metaKey;
+    const anchorId = tahiState.firstSelectedItemId;
+    const anchorIndex =
+      anchorId !== undefined
+        ? tahiState.todoItems.findIndex((item) => item.id === anchorId)
+        : undefined;
+
+    let nextSelectedIds: number[];
+
+    if (isShift && anchorIndex !== undefined && anchorIndex !== -1) {
+      const start = Math.min(anchorIndex, clickedIndex);
+      const end = Math.max(anchorIndex, clickedIndex);
+      const rangeIds = tahiState.todoItems.slice(start, end + 1).map((item) => item.id);
+      nextSelectedIds =
+        anchorId !== undefined && rangeIds.includes(anchorId)
+          ? [anchorId, ...rangeIds.filter((id) => id !== anchorId)]
+          : rangeIds;
+    } else if (isCtrlLike) {
+      const alreadySelected = tahiState.selectedItemIds.includes(record.id);
+      if (alreadySelected) {
+        nextSelectedIds = tahiState.selectedItemIds.filter((id) => id !== record.id);
+      } else {
+        nextSelectedIds = [record.id, ...tahiState.selectedItemIds.filter((id) => id !== record.id)];
+      }
+    } else {
+      nextSelectedIds = [record.id];
+    }
+
+    if (nextSelectedIds.length === 1) {
+      dispatch(setSelectedItemId(nextSelectedIds[0]));
+    } else {
+      dispatch(setSelectedItemIds(nextSelectedIds));
+    }
+
+    const editingTitle = column.accessor === 'title' && nextSelectedIds.length === 1;
     dispatch(setEditingTitle(editingTitle));
 
-    // If the done checkbox is clicked, toggle the done state of the item.
     if (column.accessor === 'done') {
       void dispatch(updateItem({ id: record.id, newData: { done: !record.done } }));
     }
@@ -67,13 +114,13 @@ export default function Todolist(): React.JSX.Element {
   const handleCommit = useCallback(
     (record: TodoItem, value: string) => {
       if (!tahiState.editingTitle) return;
-      if (record.id !== tahiState.selectedItemId) return;
+      if (record.id !== primarySelectedId) return;
       // Commit the change if it is different from the original title
       if ((record.title ?? '') !== value) {
         void dispatch(updateItem({ id: record.id, newData: { title: value } }));
       }
     },
-    [dispatch, tahiState.editingTitle, tahiState.selectedItemId],
+    [dispatch, tahiState.editingTitle, primarySelectedId],
   );
 
   const columns = [
@@ -91,7 +138,7 @@ export default function Todolist(): React.JSX.Element {
       render: (todo: TodoItem) => (
         <TitleCell
           todo={todo}
-          isEditing={todo.id === tahiState.selectedItemId && tahiState.editingTitle === true}
+          isEditing={todo.id === primarySelectedId && tahiState.editingTitle === true}
           onCommit={(value) => handleCommit(todo, value)}
         />
       ),
@@ -105,11 +152,11 @@ export default function Todolist(): React.JSX.Element {
       columns={columns}
       withTableBorder
       highlightOnHover
-      onCellClick={({ record, column }) => {
-        handleCellClick(record as TodoItem, column);
+      onCellClick={({ record, column, event }) => {
+        handleCellClick(event, record as TodoItem, column);
       }}
       rowBackgroundColor={({ id }) =>
-        tahiState.selectedItemId === id ? { dark: '#444444', light: '#eeeeee' } : undefined
+        selectedIdsSet.has(id) ? { dark: '#444444', light: '#eeeeee' } : undefined
       }
     />
   );
