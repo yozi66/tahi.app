@@ -1,5 +1,7 @@
 export { default as IconArrowBackUp } from '@tabler/icons-react/dist/esm/icons/IconArrowBackUp.mjs';
 export { default as IconArrowForwardUp } from '@tabler/icons-react/dist/esm/icons/IconArrowForwardUp.mjs';
+export { default as IconArrowDown } from '@tabler/icons-react/dist/esm/icons/IconArrowDown.mjs';
+export { default as IconArrowUp } from '@tabler/icons-react/dist/esm/icons/IconArrowUp.mjs';
 export { default as IconArticle } from '@tabler/icons-react/dist/esm/icons/IconArticle.mjs';
 export { default as IconDeviceFloppy } from '@tabler/icons-react/dist/esm/icons/IconDeviceFloppy.mjs';
 export { default as IconFilePencil } from '@tabler/icons-react/dist/esm/icons/IconFilePencil.mjs';

@@ -78,6 +78,40 @@ export const applyDeleteItems = (
   return { removed };
 };
 
+export const applyMoveItems = (
+  items: Draft<TodoItem[]>,
+  ids: number[],
+  direction: 'up' | 'down',
+): boolean => {
+  if (ids.length === 0 || items.length <= 1) {
+    return false;
+  }
+  const selected = new Set(ids);
+  let changed = false;
+  if (direction === 'up') {
+    for (let i = 1; i < items.length; i++) {
+      const current = items[i];
+      if (!selected.has(current.id)) continue;
+      const prev = items[i - 1];
+      if (selected.has(prev.id)) continue;
+      items[i - 1] = current;
+      items[i] = prev;
+      changed = true;
+    }
+  } else {
+    for (let i = items.length - 2; i >= 0; i--) {
+      const current = items[i];
+      if (!selected.has(current.id)) continue;
+      const next = items[i + 1];
+      if (selected.has(next.id)) continue;
+      items[i] = next;
+      items[i + 1] = current;
+      changed = true;
+    }
+  }
+  return changed;
+};
+
 // Applies a partial update to a single item by id. Returns the previous values
 // for the fields that were updated so an undo change can be built easily.
 export const applyUpdateItem = (

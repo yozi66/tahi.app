@@ -1,6 +1,6 @@
 import { TodoItem } from '@common/types/TodoItem';
 import { AnyChange } from '@common/types/AnyChange';
-import { applyAddItems, applyDeleteItems, applyUpdateItem } from '@common/util/ApplyUtils';
+import { applyAddItems, applyDeleteItems, applyMoveItems, applyUpdateItem } from '@common/util/ApplyUtils';
 
 export class TodoList {
   constructor(
@@ -46,6 +46,25 @@ export class TodoList {
     const undoChange: AnyChange = {
       type: 'deleteItems',
       ids: itemsWithIndex.map(({ item }) => item.id),
+    };
+    return { undo: undoChange, effects: [] };
+  }
+  moveItems(
+    ids: number[],
+    direction: 'up' | 'down',
+  ): { undo: AnyChange | undefined; effects: AnyChange[] } {
+    if (ids.length === 0) {
+      return { undo: undefined, effects: [] };
+    }
+    const moved = applyMoveItems(this._items, ids, direction);
+    if (!moved) {
+      return { undo: undefined, effects: [] };
+    }
+    this._saved = false;
+    const undoChange: AnyChange = {
+      type: 'moveItems',
+      ids,
+      direction: direction === 'up' ? 'down' : 'up',
     };
     return { undo: undoChange, effects: [] };
   }

@@ -12,6 +12,7 @@ import {
   getItems,
   getNextId,
   getSelectedItemIds,
+  getSelectedItemIndexes,
   getTopSelectedItemIndex,
   getCanUndo,
   getCanRedo,
@@ -24,7 +25,9 @@ import {
 import { AnyChange } from '@common/types/AnyChange';
 import {
   IconArrowBackUp,
+  IconArrowDown,
   IconArrowForwardUp,
+  IconArrowUp,
   IconDeviceFloppy,
   IconFilePencil,
   IconFolderOpen,
@@ -39,10 +42,21 @@ export function TahiHeader(): React.JSX.Element {
   const desktopOpened = useAppSelector(selectDesktopOpened);
   const items = useAppSelector(getItems);
   const selectedItemIds = useAppSelector(getSelectedItemIds);
+  const selectedItemIndexes = useAppSelector(getSelectedItemIndexes);
   const topSelectedItemIndex = useAppSelector(getTopSelectedItemIndex);
   const nextId = useAppSelector(getNextId);
   const canUndo = useAppSelector(getCanUndo);
   const canRedo = useAppSelector(getCanRedo);
+  const minSelectedIndex =
+    selectedItemIndexes.length > 0 ? Math.min(...selectedItemIndexes) : undefined;
+  const maxSelectedIndex =
+    selectedItemIndexes.length > 0 ? Math.max(...selectedItemIndexes) : undefined;
+  const canMoveUp =
+    selectedItemIds.length > 0 && minSelectedIndex !== undefined && minSelectedIndex > 0;
+  const canMoveDown =
+    selectedItemIds.length > 0 &&
+    maxSelectedIndex !== undefined &&
+    maxSelectedIndex < items.length - 1;
 
   return (
     <Group h="100%" px="md">
@@ -133,6 +147,46 @@ export function TahiHeader(): React.JSX.Element {
           }}
         >
           <IconTrashX size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Move up" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Move up"
+          disabled={!canMoveUp}
+          style={canMoveUp ? undefined : disabledActionIconStyle}
+          onClick={() => {
+            if (canMoveUp) {
+              const change: AnyChange = { type: 'moveItems', ids: selectedItemIds, direction: 'up' };
+              void dispatch(sendAndApplyChange(change));
+            }
+          }}
+        >
+          <IconArrowUp size={20} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Move down" withArrow>
+        <ActionIcon
+          variant="subtle"
+          color="blue"
+          size="sm"
+          aria-label="Move down"
+          disabled={!canMoveDown}
+          style={canMoveDown ? undefined : disabledActionIconStyle}
+          onClick={() => {
+            if (canMoveDown) {
+              const change: AnyChange = {
+                type: 'moveItems',
+                ids: selectedItemIds,
+                direction: 'down',
+              };
+              void dispatch(sendAndApplyChange(change));
+            }
+          }}
+        >
+          <IconArrowDown size={20} />
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Undo" withArrow>

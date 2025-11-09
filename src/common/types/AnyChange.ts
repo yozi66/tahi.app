@@ -14,6 +14,12 @@ export interface DeleteItemsChange extends Change {
   ids: number[];
 }
 
+export interface MoveItemsChange extends Change {
+  type: 'moveItems';
+  ids: number[];
+  direction: 'up' | 'down';
+}
+
 export interface UpdateItemChange extends Change {
   type: 'updateItem';
   id: number;
@@ -29,5 +35,6 @@ export interface UndoRedoStatusChange extends Change {
 export type AnyChange =
   | AddItemsChange
   | DeleteItemsChange
+  | MoveItemsChange
   | UpdateItemChange
   | UndoRedoStatusChange;

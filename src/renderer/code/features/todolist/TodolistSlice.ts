@@ -2,7 +2,7 @@ import { createAppSlice } from '@renderer/app/createAppSlice';
 import { TodoItem } from '@common/types/TodoItem';
 import type { Draft } from '@reduxjs/toolkit';
 import { AnyChange } from '@common/types/AnyChange';
-import { applyAddItems, applyDeleteItems } from '@common/util/ApplyUtils';
+import { applyAddItems, applyDeleteItems, applyMoveItems } from '@common/util/ApplyUtils';
 
 export type TodolistSlice = {
   firstSelectedItemId?: number;
@@ -147,6 +147,14 @@ const applySingleChange = (
         state.editingTitle = false;
       }
       state.saved = false;
+      break;
+    }
+    case 'moveItems': {
+      const moved = applyMoveItems(state.todoItems, change.ids, change.direction);
+      if (moved) {
+        applySelection(state, state.selectedItemIds);
+        state.saved = false;
+      }
       break;
     }
     case 'updateItem': {

@@ -62,3 +62,5 @@ export type TodolistSlice = {
   selectedItemIndexes: number[];
 
   // TODO: handle shift-click and ctrl-click for multi-selection
+
+  // TODO add two header buttons, up and down arrows to move the selected item(s) up and down
