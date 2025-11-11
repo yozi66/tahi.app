@@ -54,6 +54,8 @@ API changes
 Codex prompts
 -------------
 
+// TODO We can move items using the up and down buttons in the header (TahiHeader.tsx). Add drag-and-drop to move the tasks. See https://icflorescu.github.io/mantine-datatable/examples/row-dragging/ for drag-and-drop docs
+
 // TODO for multi-select support we need topSelectedItem and firstSelectedItem ids and indexes instead of single selectedItemId/index
 export type TodolistSlice = {
   selectedItemId?: number;
